@@ -20,9 +20,10 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; overflow-x:hidden; -webkit-tap-highlight-color:transparent; }
 body {
-  background:#333;
+  background:#000;
   display:flex; justify-content:center; align-items:flex-start;
   min-height:var(--ah, 874px);
+  padding-top:env(safe-area-inset-top, 0px);
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
 }
 .app {
@@ -49,7 +50,7 @@ body {
   position:relative; z-index:0;
 }
 /* Scale entrance — only when .enter is present (custom path) */
-.app.enter .app-content {
+.app.enter {
   animation: pageEnter 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 @keyframes pageEnter {
@@ -304,20 +305,21 @@ body {
 .nav-item:active { opacity:0.7; }
 
 /* ===== Loading Overlay ===== */
+@keyframes loadingIn { from { opacity:0; } to { opacity:1; } }
 .loading-overlay {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
   z-index:350; display:none;
-  background:#fff;
+  background:#FFFCF8;
   flex-direction:column; align-items:center; justify-content:center;
-  opacity:1; transition:opacity 0.4s ease-out;
+  transition:opacity 0.4s ease-out;
 }
-.loading-overlay.show { display:flex; }
-.loading-overlay.fade-out { opacity:0; }
+.loading-overlay.show { display:flex; animation:loadingIn 0.6s ease; }
 .loading-gif {
   width:200px; height:200px;
   object-fit:contain;
 }
+.loading-overlay.fade-out { opacity:0; }
 .loading-text {
   margin-top:16px;
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
@@ -331,6 +333,7 @@ body {
   background:#F5F5F5;
   display:none; flex-direction:column;
   z-index:10; overflow-y:auto;
+  opacity:0; transition: opacity 0.3s ease;
   -webkit-overflow-scrolling:touch;
 }
 #page-order::-webkit-scrollbar, #page-me::-webkit-scrollbar { display:none; }
@@ -553,8 +556,10 @@ body {
 #page-menu {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
+  background:#fff;
   z-index:10; overflow:hidden;
   display:none;
+  opacity:0; transition: opacity 0.3s ease;
 }
 @keyframes pageFadeIn {
   from { opacity:0; }
@@ -583,23 +588,23 @@ body {
 }
 
 .menu-dine-toggle {
-  position:absolute; left:20px; top:33px;
-  width:74px; height:18px; cursor:pointer;
-  border-radius:17.5px;
+  position:absolute; right:20px; top:15px;
+  width:100px; height:36px; cursor:pointer;
+  border-radius:35px;
   border:1px solid #fff; z-index:14;
   overflow:hidden;
   display:flex; align-items:center;
 }
 .dine-pill {
-  position:absolute; width:40px; height:100%;
-  background:#fff; border-radius:17.5px;
+  position:absolute; width:54px; height:100%;
+  background:#FFFCF8; border-radius:35px;
   transition:left 200ms ease;
 }
-.dine-pill.right { left:34px; }
+.dine-pill.right { left:46px; }
 .dine-text {
   flex:1; text-align:center;
   font-family:'PingFang SC',sans-serif;
-  font-size:10px; line-height:18px;
+  font-size:15px; line-height:36px;
   position:relative; z-index:1;
   transition:color 200ms;
 }
@@ -612,7 +617,7 @@ body {
   white-space:nowrap;
 }
 .menu-distance {
-  position:absolute; left:117px; top:35px; z-index:14;
+  position:absolute; left:20px; top:35px; z-index:14;
   font-family:'PingFang SC',sans-serif;
   font-size:10px; font-weight:700; color:#fff;
 }
@@ -748,11 +753,12 @@ body {
   background:#fff;
   border-radius:24.5px;
   z-index:13;
-  display:none;
-  align-items:center;
+  display:flex; align-items:center;
   box-shadow:0 1px 10px rgba(0,0,0,0.10);
+  opacity:0; pointer-events:none;
+  transition: opacity 0.3s ease;
 }
-.app.on-menu .menu-bottom-bar { display:flex; }
+.app.is-menu .menu-bottom-bar { opacity:1; pointer-events:auto; }
 
 .menu-bottom-bar .bb-icon {
   width:60px; height:60px; flex-shrink:0;
@@ -811,8 +817,10 @@ body {
   width:402px; height:813px;
   z-index:100; display:none;
   background:rgba(0,0,0,0.85);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease-out;
 }
-.cart-overlay.open { display:block; }
+.cart-overlay.open { display:block; opacity:1; pointer-events:auto; }
 
 .cart-sheet {
   position:absolute; left:0; right:0;
@@ -822,8 +830,10 @@ body {
   z-index:101; display:none;
   flex-direction:column;
   overflow:hidden;
+  transform:translateY(calc(100% + 60px));
+  transition:transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
 }
-.cart-sheet.open { display:flex; }
+.cart-sheet.open { display:flex; transform:translateY(0); }
 
 .cart-sheet-header {
   display:flex; align-items:center; justify-content:space-between;
@@ -929,11 +939,12 @@ body {
   background-size:402px auto;
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
+  opacity:0; transition: opacity 0.3s ease;
 }
 html.webp #page-confirm {
   background-image:url('确认订单/确认订单背景.webp');
 }
-#page-confirm.show { display:block; }
+#page-confirm.show { display:block; opacity:1; }
 #page-confirm::-webkit-scrollbar { display:none; }
 
 .confirm-top {
@@ -988,14 +999,22 @@ html.webp .confirm-top {
 .confirm-dine-toggle {
   display:flex; gap:9px; margin-bottom:12px;
   background:#F9F9F9; border-radius:12px; overflow:hidden;
-  height:86px; align-items:center; justify-content:center;
+  min-height:86px; align-items:flex-end; justify-content:center;
+  touch-action:manipulation;
 }
 .confirm-dine-option {
-  width:164px; height:61px; cursor:pointer;
+  cursor:pointer; height:61px;
   display:flex; align-items:center; justify-content:center;
+  transform:translateY(-10px);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  -webkit-user-select:none; user-select:none;
 }
 .confirm-dine-option img {
-  width:164px; height:61px; object-fit:contain;
+  height:58px; width:auto; object-fit:contain;
+}
+.confirm-dine-option.dine-sel img {
+  height:61px;
 }
 
 /* Pickup time */
@@ -1221,8 +1240,10 @@ html.webp .confirm-top {
   overflow-y:auto;
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
 }
-#page-detail.show { display:block; }
+#page-detail.show { display:block; transform: translateX(0); }
 #page-detail::-webkit-scrollbar { display:none; }
 .detail-backdrop {
   display:none;
@@ -1296,13 +1317,18 @@ html.webp .confirm-top {
 .spec-overlay {
   position:absolute; left:0; top:0; width:402px; height:874px;
   z-index:25; background:rgba(0,0,0,0.55);
-  display:flex; align-items:center; justify-content:center;
+  display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; transition: opacity 0.35s ease;
 }
+.spec-overlay.show { opacity:1; }
 .spec-modal {
   width:380px; max-height:628px;
-  background:#fff; border-radius:12px; overflow:hidden;
+  background:#fff; border-radius:12px 12px 0 0; overflow:hidden;
   display:flex; flex-direction:column;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
 }
+.spec-modal.show { transform: translateY(0); }
 .spec-close-bar {
   display:flex; justify-content:center; padding:12px 0 4px;
 }
@@ -1504,7 +1530,7 @@ html.webp .confirm-top {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
   z-index:500;
-  background:#1a1a1a;
+  background:#FFFCF8;
   display:flex; flex-direction:column;
   justify-content:center; align-items:center;
   transition: opacity 0.5s ease;
@@ -1518,7 +1544,7 @@ html.webp .confirm-top {
 
 .loading-bar-track {
   width:280px; height:6px;
-  background:rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.08);
   border-radius:3px;
   overflow:hidden;
 }
@@ -1532,13 +1558,13 @@ html.webp .confirm-top {
   margin-top:12px;
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   font-size:13px; font-weight:500;
-  color:rgba(255,255,255,0.5);
+  color:rgba(0,0,0,0.45);
 }
 .loading-tip {
   margin-top:8px;
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   font-size:11px; font-weight:400;
-  color:rgba(255,255,255,0.25);
+  color:rgba(0,0,0,0.3);
 }
 
 /* ===== Pig Runner Waiting Game ===== */
@@ -1546,9 +1572,10 @@ html.webp .confirm-top {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
   z-index:300; display:none;
-  background:transparent;
+  background:transparent; pointer-events:none;
+  opacity:0; transition: opacity 0.3s ease;
 }
-#page-waiting.show { display:block; }
+#page-waiting.show { display:block; opacity:1; pointer-events:auto; }
 #dino-bg-cv {
   display:block; width:412px; height:874px;
   position:absolute; left:-5px; top:0; z-index:1; pointer-events:none;
@@ -1566,9 +1593,10 @@ html.webp .confirm-top {
 #dino-scroll {
   position:absolute; z-index:2;
   overflow-y:auto; overflow-x:hidden;
-  pointer-events:auto;
+  pointer-events:none;
   -webkit-overflow-scrolling:touch; scrollbar-width:none;
 }
+	#page-waiting.show #dino-scroll { pointer-events:auto; }
 #dino-scroll::-webkit-scrollbar { display:none; }
 #dino-scroll-inner { position:relative; width:402px; }
 #dino-brown-overlay {
@@ -1675,10 +1703,10 @@ html.webp .confirm-top {
 
   <!-- Bottom buttons -->
   <div class="btn-enter-menu" onclick="switchTab('菜单')">
-    <img src="进入菜单.webp" alt="进入菜单">
+    <img src="按钮/进入菜单.webp" alt="进入菜单">
   </div>
   <div class="btn-cart" onclick="smartAddToCart()">
-    <img src="购物车.webp" alt="加入购物车">
+    <img src="按钮/购物车.webp" alt="加入购物车">
   </div>
 
   <!-- ===== Menu Page ===== -->
@@ -1700,7 +1728,7 @@ html.webp .confirm-top {
         </div>
         <div class="menu-store-name">古镇曹二市场店</div>
         <div class="menu-distance">距离739m</div>
-        <img class="ad-bg-img" src="大广告.webp" alt="">
+        <img class="ad-bg-img" src="首页广告/大广告.webp" alt="">
       </div>
       <div class="menu-scroll" id="menuScroll"></div>
     </div>
@@ -1884,7 +1912,7 @@ html.webp .confirm-top {
 
   <!-- Loading overlay (outside app-content) -->
   <div class="loading-overlay" id="loadingOverlay">
-    <video class="loading-gif" autoplay loop muted playsinline src="dino-assets/等待界面/小猪搅拌面条-m.mp4"></video>
+    <img class="loading-gif" src="dino-assets/等待界面/小猪搅拌面条.gif" alt="">
     <span class="loading-text">正在准备美味...</span>
   </div>
 
@@ -1892,15 +1920,15 @@ html.webp .confirm-top {
   <div id="page-waiting">
     <div class="waiting-top">
       <img class="waiting-back-btn" src="返回.webp" alt="" onclick="hideWaitingPage()">
-      <span class="waiting-top-title">确认订单</span>
+      <span class="waiting-top-title"></span>
     </div>
     <canvas id="dino-bg-cv" width="402" height="874"></canvas>
     <canvas id="dino-game-cv" width="402" height="874"></canvas>
     <div id="dino-scroll"><div id="dino-scroll-inner"></div></div>
     <div id="dino-brown-overlay"></div>
-    <video class="dino-sprite" id="dino-pig-run" autoplay loop muted playsinline src=""></video>
+    <img class="dino-sprite" id="dino-pig-run" src="" alt="">
     <img class="dino-sprite" id="dino-pig-idle" src="" alt="">
-    <video class="dino-sprite" id="dino-pot-s" autoplay loop muted playsinline src=""></video>
+    <img class="dino-sprite" id="dino-pot-s" src="" alt="">
     <img class="dino-sprite" id="dino-pot-idle" src="" alt="">
     <img id="dino-start-dom" src="dino-assets/开始游戏键.webp" alt="开始游戏">
     <div id="dino-over-btns" style="display:none;">
@@ -2250,11 +2278,14 @@ function openCartPanel() {
   if (state.menuCart.length === 0) return;
   var overlay = document.getElementById('cartOverlay');
   var sheet = document.getElementById('cartSheet');
-  if (overlay) overlay.classList.add('open');
-  if (sheet) sheet.classList.add('open');
+  // Show overlay + sheet first, then trigger transition
+  if (overlay) { overlay.style.display = 'block'; }
+  if (sheet) { sheet.style.display = 'flex'; }
+  renderCartPanel();
+  if (overlay) { overlay.offsetHeight; overlay.classList.add('open'); }
+  if (sheet) { sheet.classList.add('open'); }
   var bottomBar = document.querySelector('.bottom-bar');
   if (bottomBar) bottomBar.classList.add('raised');
-  renderCartPanel();
 }
 
 function toggleCartPanel() {
@@ -2272,6 +2303,11 @@ function closeCartPanel() {
   var sheet = document.getElementById('cartSheet');
   if (overlay) overlay.classList.remove('open');
   if (sheet) sheet.classList.remove('open');
+  // Hide after transition completes
+  setTimeout(function() {
+    if (overlay && !overlay.classList.contains('open')) overlay.style.display = 'none';
+    if (sheet && !sheet.classList.contains('open')) sheet.style.display = 'none';
+  }, 350);
   var bottomBar = document.querySelector('.bottom-bar');
   if (bottomBar) bottomBar.classList.remove('raised');
 }
@@ -2419,16 +2455,17 @@ function goCheckout() {
   closeCartPanel();
   // Show loading animation
   var overlay = document.getElementById('loadingOverlay');
-  var gif = overlay ? overlay.querySelector('.loading-gif') : null;
   var text = overlay ? overlay.querySelector('.loading-text') : null;
-  if (gif) gif.src = '小猪入锅.mp4';
   if (text) text.textContent = '正在烹饪美味...';
   if (overlay) overlay.classList.add('show');
-  // Render confirm page underneath the loading overlay
-  showConfirmPage();
+  // Delay confirm page until overlay is visible
+  setTimeout(function() { showConfirmPage(); }, 600);
   setTimeout(function() {
-    if (overlay) overlay.classList.remove('show');
-  }, 2000);
+    if (overlay) overlay.classList.add('fade-out');
+    setTimeout(function() {
+      if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
+    }, 400);
+  }, 1500);
 }
 
 // ===== Detail Page =====
@@ -2539,7 +2576,10 @@ function showDetailPage(id) {
   if (id.startsWith('combo')) {
     renderComboDetail(id);
     updateDetailPrice();
-    document.getElementById('page-detail').classList.add('show');
+    var el = document.getElementById('page-detail');
+    el.style.display = 'block';
+    el.offsetHeight; // force reflow so browser registers initial position
+    el.classList.add('show');
     document.getElementById('navBar').style.display = 'none';
   } else {
     // Non-combo items: show spec selector popup
@@ -2766,6 +2806,9 @@ function showSpecPopup(titleText, descText, onConfirm, excludeCats) {
 
   overlay.appendChild(modal);
   document.querySelector('.app').appendChild(overlay);
+  overlay.offsetHeight; // force reflow
+  overlay.classList.add('show');
+  modal.classList.add('show');
   document.getElementById('navBar').style.display = 'none';
 }
 
@@ -2879,7 +2922,11 @@ function specTogglePill(el) {
 
 function closeMethodPopup() {
   var el = document.getElementById('methodPopupOverlay');
-  if (el) el.remove();
+  if (!el) { _specBounceCard = null; return; }
+  el.classList.remove('show');
+  var modal = el.querySelector('.spec-modal');
+  if (modal) modal.classList.remove('show');
+  setTimeout(function() { if (el) el.remove(); }, 350);
   _specBounceCard = null;
   var detailPage = document.getElementById('page-detail');
   if (!detailPage || !detailPage.classList.contains('show')) {
@@ -2941,7 +2988,9 @@ function detailAddToCart() {
 }
 
 function hideDetailPage() {
-  document.getElementById('page-detail').classList.remove('show');
+  var el = document.getElementById('page-detail');
+  el.classList.remove('show');
+  setTimeout(function() { el.style.display = 'none'; }, 350);
   document.getElementById('detailScroll').scrollTop = 0;
   document.getElementById('navBar').style.display = '';
   closeMethodPopup();
@@ -3379,25 +3428,17 @@ function toggleCondiment(name, el) {
 }
 
 function switchTab(name) {
-  setTimeout(preloadAllAssets, 0); // async, continue preloading during transitions
+  setTimeout(preloadAllAssets, 0);
   var currentTab = navTabs.find(function(t) { return t.active; });
-  var fromHome = currentTab && currentTab.name === '首页';
-  var toMenu = name === '菜单';
-  var fromMenu = currentTab && currentTab.name === '菜单';
-  var toOrders = name === '订单';
-  var fromOrders = currentTab && currentTab.name === '订单';
-  var toMe = name === '我的';
 
-  if (fromHome && toMenu) {
+  if (currentTab && currentTab.name === '首页' && name === '菜单') {
     var overlay = document.getElementById('loadingOverlay');
-    var gif = overlay ? overlay.querySelector('.loading-gif') : null;
     var text = overlay ? overlay.querySelector('.loading-text') : null;
-    if (gif) gif.src = 'dino-assets/等待界面/小猪搅拌面条-m.mp4';
     if (text) text.textContent = '正在准备美味...';
     if (overlay) overlay.classList.add('show');
-    doSwitchTab(name);
-    // Aggressive preloading during loading animation
-    var preloadRounds = 0, maxRounds = 8;
+    // Delay page switch until overlay is visible
+    setTimeout(function() { doSwitchTab(name); }, 600);
+    var preloadRounds = 0, maxRounds = 5;
     function preloadTick() {
       preloadAllAssets();
       preloadRounds++;
@@ -3409,35 +3450,7 @@ function switchTab(name) {
       setTimeout(function() {
         if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
       }, 400);
-    }, 2500);
-    return;
-  }
-
-  // Menu ↔ Orders, Orders ↔ Me: cross-fade
-  var nonHome = ['菜单','订单','我的'];
-  if (nonHome.includes(currentTab && currentTab.name) && nonHome.includes(name)) {
-    var pageMap = { '菜单':'page-menu', '订单':'page-order', '我的':'page-me' };
-    var oldId = pageMap[currentTab.name];
-    var newId = pageMap[name];
-    var oldPage = document.getElementById(oldId);
-    var newPage = document.getElementById(newId);
-    // Show new page on top at opacity 0, then fade in over old page
-    newPage.style.display = 'block';
-    newPage.style.opacity = '0';
-    newPage.style.zIndex = '11';
-    newPage.style.animation = 'none';
-    void newPage.offsetHeight;
-    newPage.style.animation = 'pageFadeIn 0.3s ease forwards';
-    // doSwitchTab will hide old page — keep it visible underneath during fade
-    doSwitchTab(name);
-    oldPage.style.display = 'block';
-    // After fade-in completes, remove old page and clean up
-    setTimeout(function() {
-      oldPage.style.display = 'none';
-      newPage.style.zIndex = '';
-      newPage.style.animation = '';
-      newPage.style.opacity = '';
-    }, 350);
+    }, 1500);
     return;
   }
 
@@ -3448,24 +3461,54 @@ function doSwitchTab(name) {
   navTabs.forEach(t => t.active = (t.name === name));
   renderNav();
   closeCartPanel();
-  // Hide waiting/confirm/detail pages when navigating away
+  // Always clean up overlay pages
   var wp = document.getElementById('page-waiting');
-  wp.classList.remove('show');
-  wp.style.zIndex = '300';
-  document.getElementById('page-confirm').classList.remove('show');
-  document.getElementById('page-detail').classList.remove('show');
-  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
-  // Toggle pages
-  document.getElementById('page-menu').style.display = (name === '菜单') ? 'block' : 'none';
-  document.getElementById('page-order').style.display = (name === '订单') ? 'block' : 'none';
-  document.getElementById('page-me').style.display = (name === '我的') ? 'block' : 'none';
-  // Toggle home/menu mode
+  if (wp.classList.contains('show')) { wp.classList.remove('show'); wp.style.display = 'none'; wp.style.pointerEvents = 'none'; if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; } }
+  var cf = document.getElementById('page-confirm');
+  if (cf.classList.contains('show')) { cf.classList.remove('show'); }
+  var dt = document.getElementById('page-detail');
+  if (dt.classList.contains('show')) { dt.classList.remove('show'); }
+  var pageMap = { '菜单':'page-menu', '订单':'page-order', '我的':'page-me' };
   const app = document.querySelector('.app');
-  if (name === '菜单') {
-    app.classList.add('on-menu');
-    if (!state._menuRendered) { renderMenuCards(); state._menuRendered = true; }
-  } else {
+  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
+
+  if (name === '首页') {
+    // Going to home: reveal home, fade out old tab pages on top
     app.classList.remove('on-menu');
+    app.classList.remove('is-menu');
+    Object.keys(pageMap).forEach(function(tabName) {
+      var pageEl = document.getElementById(pageMap[tabName]);
+      if (!pageEl || pageEl.style.display !== 'block') return;
+      pageEl.style.zIndex = '11';
+      pageEl.style.opacity = '0';
+      setTimeout(function() { pageEl.style.display = 'none'; pageEl.style.zIndex = ''; }, 350);
+    });
+  } else {
+    // Going to a tab page: fade in new on top
+    var incomingEl = document.getElementById(pageMap[name]);
+    if (incomingEl) {
+      incomingEl.style.display = 'block';
+      incomingEl.style.zIndex = '11';
+      incomingEl.style.opacity = '0';
+      incomingEl.offsetHeight;
+      incomingEl.style.opacity = '1';
+      if (name === '菜单') {
+        app.classList.add('is-menu');
+        if (!state._menuRendered) { renderMenuCards(); state._menuRendered = true; }
+      } else {
+        app.classList.remove('is-menu');
+      }
+      setTimeout(function() {
+        Object.keys(pageMap).forEach(function(tabName) {
+          if (tabName === name) return;
+          var pageEl = document.getElementById(pageMap[tabName]);
+          if (!pageEl || pageEl.style.display !== 'block') return;
+          pageEl.style.display = 'none'; pageEl.style.zIndex = '';
+        });
+        incomingEl.style.zIndex = '10';
+        app.classList.add('on-menu');
+      }, 350);
+    }
   }
   if (name === '首页') {
     bgm.init().then(() => bgm.play());
@@ -3921,9 +3964,11 @@ function collectAllAssetUrls() {
     add('dino-assets/重玩键.webp');
     add('dino-assets/锅的原始状态.webp');
 
-    // 13. Loading overlay GIFs (dynamically set via .src)
-    add('小猪入锅.mp4');
-    add('dino-assets/等待界面/小猪搅拌面条-m.mp4');
+    // 13. Loading overlay GIFs
+    add('dino-assets/等待界面/小猪搅拌面条.gif');
+    add('小猪搅拌面条_nobg.gif');
+    add('dino-assets/小猪奔跑.gif');
+    add('dino-assets/锅.gif');
 
     // 14. Price floating UI
     add('价格浮窗/碗.webp');
@@ -4107,7 +4152,6 @@ const confirmAddons = [
   {id:'ca01', name:'现做煎蛋', desc:'下单以后现煎', price:2, img:'确认订单/现做煎蛋（推荐加餐）.webp'},
   {id:'ca02', name:'美味猪蹄', desc:'软糯香甜', price:12, img:'确认订单/美味猪蹄（推荐加餐）.webp'},
   {id:'ca03', name:'大块牛肉', desc:'酱香牛肉，入口即化', price:10, img:'确认订单/大块牛肉（推荐加餐）.webp'},
-  {id:'ca04', name:'冰镇可乐', desc:'清爽一夏', price:2, img:'确认订单/冰镇可乐（推荐加餐）.webp'},
   {id:'ca05', name:'酱香肥肠', desc:'软糯入味，鲜辣醇厚', price:10, img:'确认订单/酱香肥肠（推荐加餐）.webp'},
 ];
 var _confirmDineType = '堂食';
@@ -4115,13 +4159,18 @@ var _confirmDineType = '堂食';
 function showConfirmPage() {
   _confirmDineType = state.dineType || '堂食';
   renderConfirmPage();
-  document.getElementById('page-confirm').classList.add('show');
-  document.getElementById('page-confirm').scrollTop = 0;
+  var el = document.getElementById('page-confirm');
+  el.style.display = 'block';
+  el.offsetHeight; // force reflow
+  el.classList.add('show');
+  el.scrollTop = 0;
   document.getElementById('navBar').style.display = 'none';
 }
 
 function hideConfirmPage() {
-  document.getElementById('page-confirm').classList.remove('show');
+  var el = document.getElementById('page-confirm');
+  el.classList.remove('show');
+  setTimeout(function() { el.style.display = 'none'; }, 350);
   document.getElementById('navBar').style.display = '';
 }
 
@@ -4167,19 +4216,17 @@ function confirmPay() {
   hideConfirmPage();
   // Show loading animation before game
   var overlay = document.getElementById('loadingOverlay');
-  var gif = overlay ? overlay.querySelector('.loading-gif') : null;
   var text = overlay ? overlay.querySelector('.loading-text') : null;
-  if (gif) gif.src = 'dino-assets/小猪奔跑-m.mp4';
   if (text) text.textContent = '订单支付成功！';
   if (overlay) overlay.classList.add('show');
-  // Render game page underneath
-  showWaitingPage(orderItems);
+  // Delay game page until overlay is visible
+  setTimeout(function() { showWaitingPage(orderItems); }, 600);
   setTimeout(function() {
     if (overlay) overlay.classList.add('fade-out');
     setTimeout(function() {
       if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
     }, 400);
-  }, 1400);
+  }, 1500);
 }
 
 function renderConfirmPage() {
@@ -4192,12 +4239,12 @@ function renderConfirmPage() {
 
   var html = '';
 
-  // Dine/takeout toggle
+  // Dine/takeout toggle — selected image includes checkmark so it's wider
   var dineImg = _confirmDineType === '堂食' ? '确认订单/堂食选择后.webp?v=2' : '确认订单/堂食选择前.webp?v=2';
   var takeoutImg = _confirmDineType === '外带' ? '确认订单/外带选择后.webp?v=2' : '确认订单/外带选择前.webp?v=2';
   html += '<div class="confirm-dine-toggle">';
-  html += '<div class="confirm-dine-option" onclick="confirmToggleDine(\'堂食\')"><img src="'+dineImg+'" alt="堂食"></div>';
-  html += '<div class="confirm-dine-option" onclick="confirmToggleDine(\'外带\')"><img src="'+takeoutImg+'" alt="外带"></div>';
+  html += '<div class="confirm-dine-option' + (_confirmDineType==='堂食'?' dine-sel':'') + '" onclick="confirmToggleDine(\'堂食\')"><img src="'+dineImg+'" alt="堂食"></div>';
+  html += '<div class="confirm-dine-option' + (_confirmDineType==='外带'?' dine-sel':'') + '" onclick="confirmToggleDine(\'外带\')"><img src="'+takeoutImg+'" alt="外带"></div>';
   html += '</div>';
 
   // Pickup time
@@ -4302,11 +4349,10 @@ function confirmToggleDine(type) {
   var body = document.getElementById('confirmBody');
   if (!body) return;
 
-  // Directly swap button images — no animation
-  var dineImg = body.querySelector('.confirm-dine-option img[alt="堂食"]');
-  var takeoutImg = body.querySelector('.confirm-dine-option img[alt="外带"]');
-  if (dineImg) dineImg.src = type === '堂食' ? '确认订单/堂食选择后.webp?v=2' : '确认订单/堂食选择前.webp?v=2';
-  if (takeoutImg) takeoutImg.src = type === '外带' ? '确认订单/外带选择后.webp?v=2' : '确认订单/外带选择前.webp?v=2';
+  var dineBtn = body.querySelector('.confirm-dine-option img[alt="堂食"]');
+  var takeoutBtn = body.querySelector('.confirm-dine-option img[alt="外带"]');
+  if (dineBtn) { dineBtn.src = type === '堂食' ? '确认订单/堂食选择后.webp?v=2' : '确认订单/堂食选择前.webp?v=2'; dineBtn.parentElement.classList.toggle('dine-sel', type==='堂食'); }
+  if (takeoutBtn) { takeoutBtn.src = type === '外带' ? '确认订单/外带选择后.webp?v=2' : '确认订单/外带选择前.webp?v=2'; takeoutBtn.parentElement.classList.toggle('dine-sel', type==='外带'); }
 
   // Recalculate total
   var items = state.menuCart.length > 0 ? state.menuCart : [];
@@ -4429,16 +4475,16 @@ var SCR_Y = 94;
 
 var IMG = {};
 var P = {
-  pigStand:'dino-assets/猪的原始状态.webp', pigRun:'dino-assets/小猪奔跑-m.mp4',
+  pigStand:'dino-assets/猪的原始状态.webp', pigRun:'dino-assets/小猪奔跑.gif',
   pigJump:'dino-assets/小猪跳跃.webp', mountain:'dino-assets/山.webp',
   bg:'dino-assets/等待界面/背景.webp', onion:'dino-assets/葱的原始状态.webp',
   garlic:'dino-assets/蒜的原始状态.webp', radish:'dino-assets/萝卜的原始状态.webp',
-  pot:'dino-assets/锅-m.mp4', gameOver:'dino-assets/游戏结束.webp',
+  pot:'dino-assets/锅.gif', gameOver:'dino-assets/游戏结束.webp',
   heartF:'dino-assets/有命的爱心.webp', heartE:'dino-assets/没命的爱心.webp',
   waitBg:'dino-assets/等待界面/等待界面.webp', backBtn:'dino-assets/等待界面/返回键.webp',
   miniBtn:'dino-assets/等待界面/小程序按钮.webp', dineIcon:'dino-assets/等待界面/堂食标志.webp',
   dineAddr:'dino-assets/等待界面/堂食地址.webp', statusBg:'dino-assets/等待界面/制作中状态条背景.webp',
-  pigStir:'dino-assets/等待界面/小猪搅拌面条-m.mp4', menuImg:'dino-assets/等待界面/菜单.webp',
+  pigStir:'dino-assets/等待界面/小猪搅拌面条.gif', menuImg:'dino-assets/等待界面/菜单.webp',
   scoreLabel:'dino-assets/分数：.webp', recordLabel:'dino-assets/记录：.webp',
   rankBtn:'dino-assets/排行榜单.webp', doneStatus:'dino-assets/等待界面/制作完成状态条.webp',
   orderTitle:'dino-assets/等待界面/确认订单.webp'
@@ -4500,7 +4546,7 @@ function upPig(){
   }
   pgeIdle.style.display = 'none';
   var showRun = gs === ST.PLAY && !pig.jumping && !(inv>0 && Math.floor(inv/5)%2===0);
-  if (showRun) { pge.style.display = ''; if (pge.getAttribute('d') !== P.pigRun) { pge.src = P.pigRun; pge.setAttribute('d', P.pigRun); } pge.style.left = pig.x+'px'; pge.style.top = (GY-59+gyOffset)+'px'; pge.style.width = '85px'; pge.style.height = '59px'; if (pge.paused) pge.play(); }
+  if (showRun) { pge.style.display = ''; if (pge.getAttribute('d') !== P.pigRun) { pge.src = P.pigRun; pge.setAttribute('d', P.pigRun); } pge.style.left = pig.x+'px'; pge.style.top = (GY-59+gyOffset)+'px'; pge.style.width = '85px'; pge.style.height = '59px'; }
   else { pge.style.display = 'none'; }
 }
 function upPot(){
@@ -4515,7 +4561,6 @@ function upPot(){
   pte.style.display = '';
   if (pte.getAttribute('d') !== P.pot) { pte.src = P.pot; pte.setAttribute('d', P.pot); }
   pte.style.left = pot.x+'px'; pte.style.top = (GY-pot.h+10+gyOffset)+'px'; pte.style.width = pot.w+'px'; pte.style.height = pot.h+'px'; pte.style.transform = '';
-  if (pte.paused) pte.play();
 }
 
 function dBg(){
@@ -4548,9 +4593,13 @@ function dObs(){ for (var i=0;i<obs.length;i++){ var o=obs[i], im=IMG[o.k]; if(!
 function dPig(){ if (inv>0 && Math.floor(inv/5)%2===0) return; if (!pig.jumping && gs===ST.PLAY) return; if (gs===ST.IDLE) return; var im, iw, ih, ix, iy; if (pig.jumping && IMG.pigJump) { im=IMG.pigJump; iw=100; ih=100; ix=pig.x-10; iy=GY-ih+(pig.y-(GY-pig.h))*0.8+gyOffset; } else if (IMG.pigStand) { im=IMG.pigStand; iw=80; ih=55; ix=pig.x; iy=pig.y+gyOffset; } else return; ctx.drawImage(im, ix, iy, iw, ih); }
 function dUI(){
   var curY = uiCurrY; curY += (uiTargetY-curY)*0.08; uiCurrY = curY;
-  var yy = Math.round(curY); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(12, yy, 140, 44);
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 20px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.textAlign = 'left'; ctx.fillText('分数 '+Math.floor(score/10), 22, yy+30);
-  var hs = 36, hy = yy+6, hx0 = W-15-hs*2-8;
+  var yy = Math.round(curY), bw = 128, bh = 40, bx = 16, by = yy+2, br = bh/2;
+  ctx.strokeStyle = '#B8865A'; ctx.lineWidth = 1; ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, br); ctx.stroke();
+  ctx.fillStyle = '#B8865A'; ctx.textAlign = 'left';
+  ctx.font = '14px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.fillText('分数', bx+14, by+bh/2+5);
+  ctx.font = 'bold 20px "PingFang SC","Microsoft YaHei",sans-serif'; ctx.fillText(Math.floor(score/10), bx+66, by+bh/2+7);
+  var hs = 36, hy = yy+4, hx0 = W-15-hs*2-8;
   for (var i = 0; i < 2; i++) { var hx = hx0+i*(hs+6), hi = i<lives ? IMG.heartF : IMG.heartE; if (hi) ctx.drawImage(hi, hx, hy, hs, hs); else { ctx.fillStyle = i<lives ? '#FF4444' : '#666'; ctx.beginPath(); ctx.arc(hx+hs/2, hy+hs/2, hs/2-2, 0, Math.PI*2); ctx.fill(); } }
 }
 function drawBg(){ bctx.clearRect(0,0,W,H); dBg(); dHeader(); }
@@ -4563,7 +4612,9 @@ function setupDOM(){
   var h = '';
   h += '<div style="position:relative;width:402px;height:'+sbDh+'px">';
   h += '<img src="'+P.statusBg+'" style="position:absolute;left:36px;top:0;width:'+sbDw+'px;height:'+sbDh+'px">';
-  h += '<video autoplay loop muted playsinline src="'+P.pigStir+'" style="position:absolute;left:'+(36+325/2-50)+'px;top:'+(sbDh/2-60)+'px;width:100px;height:100px"></video>';
+  h += '<div id="dinoStirGif" style="position:absolute;left:162px;top:6px;width:72px;height:72px;border-radius:50%;overflow:hidden;z-index:1">';
+  h += '<img src="小猪搅拌面条_nobg.gif" style="width:100%;height:100%;object-fit:cover">';
+  h += '</div>';
   h += '</div>';
   h += '<div style="height:25px;"></div>';
   // Render ordered items
@@ -4619,23 +4670,38 @@ function start(){ rst(); gs = ST.PLAY; sbtn.style.display = 'none'; obtn.style.d
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
 }
 function resetToIdle(){ rst(); gs = ST.EMPTY; sbtn.style.display = 'none'; obtn.style.display = 'none'; ovlTargetH = 300; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0; bovl.style.display = 'none'; cv.style.display = 'none'; pte.style.display = 'none'; pge.style.display = 'none'; pgeIdle.style.display = 'none'; pteIdle.style.display = 'none';
-  if (scr._statusImg && P.doneStatus) scr._statusImg.src = P.doneStatus;
-  var imgs = scr.querySelectorAll('img'); if (imgs[1]) imgs[1].style.display = 'none';
+  var stirGif = document.getElementById('dinoStirGif'); if (stirGif) stirGif.style.display = 'none';
+  if (scr._statusImg && P.doneStatus) { scr._statusImg.src = P.doneStatus; scr._statusImg.style.left = '-80px'; }
+  var imgs = scr.querySelectorAll('img'); if (imgs[1]) imgs[1].style.display = '';
+  container.classList.remove('show'); container.style.display = 'none'; container.style.pointerEvents = 'none';
+  if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; }
   document.getElementById('navBar').style.display = ''; container.style.zIndex = '100';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
+  var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = 'none';
+  var menuPage = document.getElementById('page-menu');
+  if (menuPage && menuPage.style.display === 'block') { menuPage.style.display = 'none'; menuPage.style.zIndex = ''; }
+  doSwitchTab('订单');
 }
-function loop(){ if (container.classList.contains('show')) { upd(); upPig(); upPot();
+var _loopRaf = 0;
+function loop(){ if (!container.classList.contains('show')) { _loopRaf = 0; return; }
+  upd(); upPig(); upPot();
   ovlCurrH += (ovlTargetH-ovlCurrH)*0.08; bovl.style.height = Math.round(ovlCurrH)+'px';
   mtnOffset += (mtnTargetY-mtnOffset)*0.08;
   gyOffset += (gyTargetY-gyOffset)*0.08;
-  draw(); } requestAnimationFrame(loop); }
+  draw();
+  if (!container.classList.contains('show')) { _loopRaf = 0; return; }
+  _loopRaf = requestAnimationFrame(loop); }
 
 
 window._dinoGameReady = false;
 window._dinoOrderItems = [];
 window.showWaitingPage = function(items){
   window._dinoOrderItems = items || [];
-  document.getElementById('page-waiting').classList.add('show');
+  var el = document.getElementById('page-waiting');
+  el.style.display = 'block';
+  el.style.pointerEvents = '';
+  el.offsetHeight; // force reflow
+  el.classList.add('show');
   document.getElementById('navBar').style.display = 'none';
   container.style.zIndex = '300';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
@@ -4645,6 +4711,7 @@ window.showWaitingPage = function(items){
       ld.style.display = 'none';
       rst(); gs = ST.IDLE;
       setupDOM();
+      var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = '';
       requestAnimationFrame(loop);
     });
   } else {
@@ -4654,15 +4721,33 @@ window.showWaitingPage = function(items){
     bovl.style.display = ''; cv.style.display = ''; pge.style.display = ''; pte.style.display = '';
     ovlTargetH = 300; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0;
     ovlCurrH = 300; uiCurrY = GY-140; mtnOffset = 0; gyOffset = 0;
-    if (scr._statusImg && P.statusBg) scr._statusImg.src = P.statusBg;
+    if (scr._statusImg && P.statusBg) { scr._statusImg.src = P.statusBg; scr._statusImg.style.left = '36px'; }
     var imgs = scr.querySelectorAll('img'); if (imgs[1]) imgs[1].style.display = '';
+    var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = '';
+    // 重新启动游戏循环
+    if (_loopRaf) { cancelAnimationFrame(_loopRaf); }
+    _loopRaf = requestAnimationFrame(loop);
   }
 };
 window.hideWaitingPage = function(){
-  document.getElementById('page-waiting').classList.remove('show');
-  container.style.zIndex = '300';
-  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
-  switchTab('订单');
+  var el = document.getElementById('page-waiting');
+  el.classList.remove('show');
+  el.style.display = 'none';
+  el.style.pointerEvents = 'none';
+  el.style.zIndex = '0';
+  // 停止游戏循环
+  if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; }
+  // 确保导航栏可见
+  document.getElementById('navBar').style.display = '';
+  document.getElementById('navBar').style.zIndex = '102';
+  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
+  // 先隐藏菜单页，避免跳转订单页时短暂露出
+  var menuPage = document.getElementById('page-menu');
+  if (menuPage && menuPage.style.display === 'block') {
+    menuPage.style.display = 'none';
+    menuPage.style.zIndex = '';
+  }
+  doSwitchTab('订单');
   var orderPage = document.getElementById('page-order');
   if (orderPage) orderPage.scrollTop = 0;
 };
