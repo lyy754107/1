@@ -81,8 +81,8 @@ body {
   position:absolute; left:333px; top:161px;
   font-family:'Inter','PingFang SC','Hiragino Sans GB',sans-serif;
   font-size:55px; font-weight:900; /* black */
-  color:#F2FF00;
-  -webkit-text-stroke:3px #7B0202;
+  color:#CA2626;
+  -webkit-text-stroke:3px #FFFFFF;
   paint-order:stroke fill;
   z-index:4; pointer-events:none;
 }
@@ -213,14 +213,14 @@ body {
   position:absolute; left:28px; top:149px;
   font-family:'Songti TC','STSong',serif;
   font-size:24px; font-weight:700; color:#fff;
-  z-index:5;
+  z-index:8;
   text-shadow:0 1px 4px rgba(0,0,0,0.5);
 }
 
 .jiaotou-layer {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
-  z-index:4; pointer-events:none;
+  z-index:8; pointer-events:none;
 }
 .jiaotou-item {
   position:absolute;
@@ -240,7 +240,7 @@ body {
 .condiment-scroll {
   position:absolute; left:7px; top:592px;
   width:395px; height:151px;
-  z-index:4;
+  z-index:8;
   overflow-x:auto; overflow-y:visible;
   white-space:nowrap;
   -webkit-overflow-scrolling:touch;
@@ -1642,7 +1642,7 @@ html.webp .confirm-top {
 
   <div class="app-content">
   <!-- Full background photo -->
-  <div class="bg-photo"><picture><source srcset="首页底图.webp" type="image/webp"><img src="首页底图.jpg" alt=""></picture></div>
+  <div class="bg-photo"><img src="首页底图.png" alt=""></div>
   <div class="bg-overlay"></div>
 
 
@@ -4673,14 +4673,10 @@ function resetToIdle(){ rst(); gs = ST.EMPTY; sbtn.style.display = 'none'; obtn.
   var stirGif = document.getElementById('dinoStirGif'); if (stirGif) stirGif.style.display = 'none';
   if (scr._statusImg && P.doneStatus) { scr._statusImg.src = P.doneStatus; scr._statusImg.style.left = '-80px'; }
   var imgs = scr.querySelectorAll('img'); if (imgs[1]) imgs[1].style.display = '';
-  container.classList.remove('show'); container.style.display = 'none'; container.style.pointerEvents = 'none';
   if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; }
   document.getElementById('navBar').style.display = ''; container.style.zIndex = '100';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
   var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = 'none';
-  var menuPage = document.getElementById('page-menu');
-  if (menuPage && menuPage.style.display === 'block') { menuPage.style.display = 'none'; menuPage.style.zIndex = ''; }
-  doSwitchTab('订单');
 }
 var _loopRaf = 0;
 function loop(){ if (!container.classList.contains('show')) { _loopRaf = 0; return; }
