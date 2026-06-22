@@ -972,9 +972,9 @@ html.webp .confirm-top {
   z-index:10;
 }
 .waiting-top {
-  width:402px; height:94px;
+  width:402px; height:210px;
   position:absolute; top:0; z-index:10;
-  background:transparent;
+  background:linear-gradient(to bottom, #CA2626 0%, #CA2626 70%, rgba(202,38,38,0.85) 85%, rgba(202,38,38,0) 100%);
 }
 .waiting-back-btn {
   position:absolute; left:16px; top:48px;
@@ -4471,7 +4471,7 @@ var container = document.getElementById('page-waiting');
 var W = 402, H = 874, GY = 820, PX = 80;
 var GR = 0.65, JV = -13, IS = 5, MS = 14, IF = 80;
 var ST = {LOADING:0, IDLE:1, PLAY:2, OVER:3, EMPTY:4}; var gs = ST.LOADING;
-var SCR_Y = 94;
+var SCR_Y = 210;
 
 var IMG = {};
 var P = {
@@ -4603,7 +4603,23 @@ function dUI(){
   for (var i = 0; i < 2; i++) { var hx = hx0+i*(hs+6), hi = i<lives ? IMG.heartF : IMG.heartE; if (hi) ctx.drawImage(hi, hx, hy, hs, hs); else { ctx.fillStyle = i<lives ? '#FF4444' : '#666'; ctx.beginPath(); ctx.arc(hx+hs/2, hy+hs/2, hs/2-2, 0, Math.PI*2); ctx.fill(); } }
 }
 function drawBg(){ bctx.clearRect(0,0,W,H); dBg(); dHeader(); }
-function drawGame(){ ctx.clearRect(0,0,W,H); if (gs===ST.EMPTY) return; dMtn(); if (gs===ST.IDLE||gs===ST.PLAY||gs===ST.OVER) dPig(); if (gs===ST.PLAY) { dObs(); dUI(); } if (gs===ST.OVER) dObs(); if (gs===ST.OVER&&otm>20) dOver(); }
+function dVeggiesIdle(){
+  if (gs !== ST.IDLE) return;
+  var veggies = [
+    {k:'onion', x:155, w:36, h:53},
+    {k:'garlic', x:268, w:40, h:38},
+    {k:'radish', x:330, w:42, h:43},
+    {k:'onion', x:60, w:30, h:44},
+    {k:'radish', x:210, w:38, h:39},
+  ];
+  for (var i = 0; i < veggies.length; i++) {
+    var v = veggies[i], im = IMG[v.k];
+    if (!im) continue;
+    var vy = GY - v.h + gyOffset;
+    ctx.drawImage(im, v.x, vy, v.w, v.h);
+  }
+}
+function drawGame(){ ctx.clearRect(0,0,W,H); if (gs===ST.EMPTY) return; dMtn(); dVeggiesIdle(); if (gs===ST.IDLE||gs===ST.PLAY||gs===ST.OVER) dPig(); if (gs===ST.PLAY) { dObs(); dUI(); } if (gs===ST.OVER) dObs(); if (gs===ST.OVER&&otm>20) dOver(); }
 function draw(){ drawBg(); drawGame(); }
 
 function setupDOM(){
