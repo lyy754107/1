@@ -2455,7 +2455,9 @@ function goCheckout() {
   closeCartPanel();
   // Show loading animation
   var overlay = document.getElementById('loadingOverlay');
+  var gif = overlay ? overlay.querySelector('.loading-gif') : null;
   var text = overlay ? overlay.querySelector('.loading-text') : null;
+  if (gif) gif.src = '小猪入锅.gif';
   if (text) text.textContent = '正在烹饪美味...';
   if (overlay) overlay.classList.add('show');
   // Delay confirm page until overlay is visible
@@ -3433,7 +3435,9 @@ function switchTab(name) {
 
   if (currentTab && currentTab.name === '首页' && name === '菜单') {
     var overlay = document.getElementById('loadingOverlay');
+    var gif = overlay ? overlay.querySelector('.loading-gif') : null;
     var text = overlay ? overlay.querySelector('.loading-text') : null;
+    if (gif) gif.src = '小猪搅拌面条_nobg.gif';
     if (text) text.textContent = '正在准备美味...';
     if (overlay) overlay.classList.add('show');
     // Delay page switch until overlay is visible
@@ -3966,6 +3970,7 @@ function collectAllAssetUrls() {
 
     // 13. Loading overlay GIFs
     add('小猪搅拌面条_nobg.gif');
+    add('小猪入锅.gif');
     add('dino-assets/小猪奔跑.gif');
     add('dino-assets/锅.gif');
 
