@@ -309,7 +309,7 @@ body {
 .loading-overlay {
   position:absolute; left:0; top:0;
   width:402px; height:874px;
-  z-index:350; display:none;
+  z-index:9999; display:none;
   background:#FFFCF8;
   flex-direction:column; align-items:center; justify-content:center;
   transition:opacity 0.4s ease-out;
@@ -318,10 +318,6 @@ body {
 .loading-gif {
   width:200px; height:200px;
   object-fit:contain;
-  -webkit-transform:translateZ(0);
-  transform:translateZ(0);
-  backface-visibility:hidden;
-  image-rendering:auto;
 }
 .loading-overlay.fade-out { opacity:0; }
 .loading-text {
@@ -975,41 +971,137 @@ html.webp .confirm-top {
   font-size:20px; font-weight:500; color:#000;
   z-index:10;
 }
-.waiting-top {
-  width:402px; height:492px;
-  position:absolute; top:0; z-index:4;
-  background:linear-gradient(to bottom, #CA2626 0%, #CA2626 36%, #DED4C8 100%);
-  pointer-events:none;
+/* ---- Waiting Page (Figma 3204:1857, 2x scale) ---- */
+.waiting-bg-img {
+  position:absolute; left:-4px; top:-4px;
+  width:410px; height:882px;
+  z-index:1; pointer-events:none;
+  object-fit:cover;
 }
 .waiting-back-btn {
   position:absolute; left:16px; top:54px;
   width:34px; height:34px; cursor:pointer; z-index:10;
   pointer-events:auto;
-}
-.waiting-top-title {
-  position:absolute; left:50%; top:57px;
-  transform:translateX(-50%);
-  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
-  font-size:20px; font-weight:500; color:#fff;
-  z-index:10;
-}
-.waiting-hero-img {
-  position:absolute; left:-8px; top:10px;
-  width:412px; height:412px; object-fit:contain;
-  z-index:5; pointer-events:none;
+  -webkit-tap-highlight-color:transparent;
 }
 .waiting-store-info {
-  position:absolute; left:62px; top:102px;
-  display:flex; align-items:center; gap:6px;
+  position:absolute; left:36px; top:102px;
+  display:flex; align-items:center; gap:0;
   z-index:10; pointer-events:none;
 }
-.waiting-store-info img {
-  width:20px; height:20px;
+.waiting-store-info .store-dine-icon {
+  width:26px; height:22px; object-fit:contain; flex-shrink:0;
+  margin-right:1px;
 }
-.waiting-store-info span {
+.waiting-store-info .waiting-dine-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  height:22px; padding:0 10px; border-radius:11px;
+  background:#CA2525;
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:12px; font-weight:400; color:#fff;
+  margin-right:10px;
+}
+.waiting-store-info .store-name {
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   font-size:16px; font-weight:400; color:#fff;
 }
+
+/* Pig status group */
+.waiting-pig-status {
+  position:absolute; left:30px; top:144px;
+  width:370px; height:100px;
+  z-index:6; pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+.waiting-pig-status .pig-status-avatar {
+  position:absolute; left:0; top:0;
+  width:100px; height:100px;
+  object-fit:contain;
+}
+.waiting-pig-status .pig-status-bubble {
+  position:absolute; left:206px; top:14px;
+  width:31px; height:26px;
+  object-fit:contain;
+}
+.waiting-pig-status .pig-status-texts {
+  position:absolute; left:244px; top:16px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.waiting-pig-status .pig-status-main {
+  font-family:'Songti TC','Songti SC','STSong','SimSun',serif;
+  font-size:24px; font-weight:400; color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.waiting-pig-status .pig-status-sub {
+  font-family:'Songti TC','Songti SC','STSong','SimSun',serif;
+  font-size:24px; font-weight:700; color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Food card */
+.waiting-food-card {
+  position:absolute; left:16px; top:262px;
+  width:368px; background:#fff;
+  border-radius:10px;
+  z-index:8; pointer-events:auto;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  transition:opacity 0.3s ease;
+}
+.waiting-food-card .food-card-title {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:16px; font-weight:400; color:#000;
+  padding:8px 16px 6px;
+}
+.waiting-food-card .food-card-divider {
+  height:1px; background:#D4D4D4;
+  margin:0 16px;
+}
+.waiting-food-card .food-item {
+  display:flex; align-items:center;
+  padding:16px; min-height:82px;
+}
+.waiting-food-card .food-item + .food-item {
+  border-top:1px solid #D4D4D4;
+}
+.waiting-food-card .food-item-img {
+  width:68px; height:68px; flex-shrink:0;
+  border-radius:8px; overflow:hidden;
+  background:#FAEDDD;
+}
+.waiting-food-card .food-item-img img {
+  width:100%; height:100%; object-fit:contain;
+}
+.waiting-food-card .food-item-info {
+  flex:1; margin-left:12px; min-width:0;
+}
+.waiting-food-card .food-item-name {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:16px; font-weight:400; color:#000;
+}
+.waiting-food-card .food-item-spec {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:12px; color:#999; margin-top:4px; line-height:1.4;
+}
+.waiting-food-card .food-item-price {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:18px; font-weight:400; color:#CA2525;
+  flex-shrink:0; margin-left:12px;
+}
+.waiting-food-card .food-card-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px 16px;
+  border-top:1px solid #D4D4D4;
+}
+.waiting-food-card .food-card-total-label {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:12px; color:#000;
+}
+.waiting-food-card .food-card-total-price {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:12px; color:#000;
+}
+
 .confirm-body {
   padding:0 15px 100px;
 }
@@ -1622,26 +1714,31 @@ html.webp .confirm-top {
 	#page-waiting.show #dino-scroll { pointer-events:auto; }
 #dino-scroll::-webkit-scrollbar { display:none; }
 #dino-scroll-inner { position:relative; width:402px; }
-#dino-brown-overlay {
-  position:absolute; left:0; bottom:0; width:100%; height:300px; z-index:3;
-  background:linear-gradient(to bottom, transparent 0%, #EFD4B5 80px, #EFD4B5 60%, #F5EDE4 85%, #FFFFFF 100%);
-  pointer-events:none;
-}
 .dino-sprite { position:absolute; pointer-events:none; z-index:5; image-rendering:auto; }
 #dino-start-dom {
-  position:absolute; z-index:6; pointer-events:auto; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  background:#CA2626; border:1px solid #E3C9A1; border-radius:54px;
+  position:absolute; left:136px; top:710px; width:141px; height:46px;
+  z-index:10; pointer-events:auto; cursor:pointer;
+  display:none; align-items:center; justify-content:center;
+  background:#CA2626; border-radius:23px;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation; -webkit-user-select:none; user-select:none;
 }
 #dino-start-dom span {
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
-  font-size:20px; font-weight:500; color:#fff;
+  font-size:20px; font-weight:600; color:#fff;
 }
 #dino-over-btns {
   display:none; position:absolute; z-index:6; left:0; top:710px;
   width:100%; justify-content:center; align-items:center; gap:12px;
+}
+#dino-end-dom {
+  height:46px; line-height:46px; padding:0 28px;
+  background:#fff; border-radius:23px;
+  font-size:20px; font-weight:700; color:#CA2626;
+  cursor:pointer; display:inline-flex; align-items:center;
+}
+#dino-replay-dom {
+  height:46px; cursor:pointer;
 }
 
 </style>
@@ -1943,42 +2040,64 @@ html.webp .confirm-top {
     </div>
   </div>
 
-  <!-- Loading overlay (outside app-content) -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <img class="loading-gif" src="小猪搅拌面条_nobg_opt.gif" alt="">
-    <span class="loading-text">正在准备美味...</span>
-  </div>
-
-  <!-- Pig Runner Waiting Game (outside app-content, z:300) -->
+  <!-- Waiting / Game Page (Figma 3204:1857, 2x scale) -->
   <div id="page-waiting">
-    <div class="waiting-top" id="waiting-top"></div>
-    <img class="waiting-hero-img" id="waiting-hero" alt="">
+    <img class="waiting-bg-img" id="waitingBgImg" src="游戏开始页面/游戏开始底图.webp" alt="">
+
+    <div class="waiting-back-btn" id="waitingBackBtn" onclick="hideWaitingPage()"></div>
+
     <div class="waiting-store-info">
-      <img src="dino-assets/等待界面/堂食图标.webp" alt="">
-      <span>古镇曹二市场店</span>
+      <img class="store-dine-icon" src="游戏开始页面/堂食图标.png" alt="">
+      <span class="waiting-dine-badge">堂食</span>
+      <span class="store-name">古镇曹二市场店</span>
     </div>
-    <img class="waiting-back-btn" src="dino-assets/等待界面/返回键.webp" alt="" onclick="hideWaitingPage()">
-    <span class="waiting-top-title"></span>
+
+    <div class="waiting-pig-status" id="waitingPigStatus">
+      <img class="pig-status-avatar" id="pigStatusStir" src="游戏开始页面/小猪搅拌面条.png" alt="">
+      <img class="pig-status-bubble" src="游戏开始页面/气泡.png" alt="">
+      <div class="pig-status-texts">
+        <div class="pig-status-main" id="pigStatusMain">我在制作中</div>
+        <div class="pig-status-sub" id="pigStatusSub">还有4分钟</div>
+      </div>
+    </div>
+
+    <div class="waiting-food-card" id="waitingFoodCard">
+      <div class="food-card-title">餐品详情</div>
+      <div class="food-card-divider"></div>
+      <div id="waitingFoodItems"></div>
+      <div class="food-card-footer">
+        <span class="food-card-total-label">商品小计</span>
+        <span class="food-card-total-price" id="waitingFoodTotal">￥0.0</span>
+      </div>
+    </div>
+
     <canvas id="dino-bg-cv" width="402" height="874"></canvas>
     <canvas id="dino-game-cv" width="402" height="874"></canvas>
     <div id="dino-scroll"><div id="dino-scroll-inner"></div></div>
-    <div id="dino-brown-overlay"></div>
     <img class="dino-sprite" id="dino-pig-run" alt="">
     <img class="dino-sprite" id="dino-pig-idle" alt="">
     <img class="dino-sprite" id="dino-pot-s" alt="">
     <img class="dino-sprite" id="dino-pot-idle" alt="">
     <div id="dino-start-dom"><span>开始游戏</span></div>
     <div id="dino-over-btns" style="display:none;">
-      <div id="dino-end-dom" style="height:46px;line-height:46px;padding:0 28px;background:#fff;border-radius:23px;font-size:20px;font-weight:700;color:#CA2626;cursor:pointer;display:inline-flex;align-items:center">结束游戏</div>
-      <img id="dino-replay-dom" src="dino-assets/重玩键.webp" alt="重玩" style="height:46px;cursor:pointer">
+      <div id="dino-end-dom">结束游戏</div>
+      <img id="dino-replay-dom" src="dino-assets/重玩键.webp" alt="重玩">
     </div>
     <div id="dino-loading">加载中...</div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <img class="loading-gif" id="loadingGif1" src="小猪搅拌面条.gif" style="display:block">
+    <img class="loading-gif" id="loadingGif2" src="小猪入锅.gif" style="display:none">
+    <span class="loading-text">正在准备美味...</span>
   </div>
 
   <!-- Nav bar (outside app-content to stay above cart sheet) -->
   <div class="nav-bar-bg"></div>
   <div class="nav-bar" id="navBar"></div>
 </div>
+
 
 <script>
 // WebP support detection + path helper
@@ -2486,9 +2605,11 @@ function goCheckout() {
   closeCartPanel();
   // Show loading animation
   var overlay = document.getElementById('loadingOverlay');
-  var gif = overlay ? overlay.querySelector('.loading-gif') : null;
+  var gif1 = document.getElementById('loadingGif1');
+  var gif2 = document.getElementById('loadingGif2');
   var text = overlay ? overlay.querySelector('.loading-text') : null;
-  if (gif) gif.src = '小猪入锅_opt.gif';
+  if (gif1) gif1.style.display = 'none';
+  if (gif2) { gif2.style.display = 'block'; gif2.src = gif2.src; }
   if (text) text.textContent = '正在烹饪美味...';
   if (overlay) overlay.classList.add('show');
   // Delay confirm page until overlay is visible
@@ -2614,6 +2735,7 @@ function showDetailPage(id) {
     el.offsetHeight; // force reflow so browser registers initial position
     el.classList.add('show');
     document.getElementById('navBar').style.display = 'none';
+    var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
   } else {
     // Non-combo items: show spec selector popup
     showMethodPopupForItem(card, name, price);
@@ -3026,6 +3148,7 @@ function hideDetailPage() {
   setTimeout(function() { el.style.display = 'none'; }, 350);
   document.getElementById('detailScroll').scrollTop = 0;
   document.getElementById('navBar').style.display = '';
+  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
   closeMethodPopup();
   _detailId = null;
 }
@@ -3466,9 +3589,11 @@ function switchTab(name) {
 
   if (currentTab && currentTab.name === '首页' && name === '菜单') {
     var overlay = document.getElementById('loadingOverlay');
-    var gif = overlay ? overlay.querySelector('.loading-gif') : null;
+    var gif1 = document.getElementById('loadingGif1');
+    var gif2 = document.getElementById('loadingGif2');
     var text = overlay ? overlay.querySelector('.loading-text') : null;
-    if (gif) gif.src = '小猪搅拌面条_nobg_opt.gif';
+    if (gif1) { gif1.style.display = 'block'; gif1.src = gif1.src; }
+    if (gif2) gif2.style.display = 'none';
     if (text) text.textContent = '正在准备美味...';
     if (overlay) overlay.classList.add('show');
     // Delay page switch until overlay is visible
@@ -3519,7 +3644,13 @@ function doSwitchTab(name) {
       setTimeout(function() { pageEl.style.display = 'none'; pageEl.style.zIndex = ''; }, 350);
     });
   } else {
-    // Going to a tab page: fade in new on top
+    // Going to a tab page: hide others first, then fade in new on top
+    Object.keys(pageMap).forEach(function(tabName) {
+      if (tabName === name) return;
+      var pageEl = document.getElementById(pageMap[tabName]);
+      if (!pageEl || pageEl.style.display !== 'block') return;
+      pageEl.style.display = 'none'; pageEl.style.zIndex = '';
+    });
     var incomingEl = document.getElementById(pageMap[name]);
     if (incomingEl) {
       incomingEl.style.display = 'block';
@@ -3534,12 +3665,6 @@ function doSwitchTab(name) {
         app.classList.remove('is-menu');
       }
       setTimeout(function() {
-        Object.keys(pageMap).forEach(function(tabName) {
-          if (tabName === name) return;
-          var pageEl = document.getElementById(pageMap[tabName]);
-          if (!pageEl || pageEl.style.display !== 'block') return;
-          pageEl.style.display = 'none'; pageEl.style.zIndex = '';
-        });
         incomingEl.style.zIndex = '10';
         app.classList.add('on-menu');
       }, 350);
@@ -4262,6 +4387,7 @@ function showConfirmPage() {
   el.classList.add('show');
   el.scrollTop = 0;
   document.getElementById('navBar').style.display = 'none';
+  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
 }
 
 function hideConfirmPage() {
@@ -4269,6 +4395,7 @@ function hideConfirmPage() {
   el.classList.remove('show');
   setTimeout(function() { el.style.display = 'none'; }, 350);
   document.getElementById('navBar').style.display = '';
+  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
 }
 
 function confirmPay() {
@@ -4313,7 +4440,11 @@ function confirmPay() {
   hideConfirmPage();
   // Show loading animation before game
   var overlay = document.getElementById('loadingOverlay');
+  var gif1 = document.getElementById('loadingGif1');
+  var gif2 = document.getElementById('loadingGif2');
   var text = overlay ? overlay.querySelector('.loading-text') : null;
+  if (gif1) gif1.style.display = 'none';
+  if (gif2) { gif2.style.display = 'block'; gif2.src = gif2.src; }
   if (text) text.textContent = '订单支付成功！';
   if (overlay) overlay.classList.add('show');
   // Delay game page until overlay is visible
@@ -4562,9 +4693,8 @@ var scr = document.getElementById('dino-scroll'), sinner = document.getElementBy
 var sbtn = document.getElementById('dino-start-dom');
 var rbtn = document.getElementById('dino-replay-dom');
 var ebtn = document.getElementById('dino-end-dom');
-var backBtn = document.querySelector('.waiting-back-btn');
+var backBtn = document.getElementById('waitingBackBtn');
 var obtn = document.getElementById('dino-over-btns');
-var bovl = document.getElementById('dino-brown-overlay');
 var container = document.getElementById('page-waiting');
 
 var W = 402, H = 874, GY = 820, PX = 80;
@@ -4576,12 +4706,12 @@ var IMG = {};
 var P = {
   pigStand:'dino-assets/猪的原始状态.webp', pigRun:'dino-assets/小猪奔跑_opt.gif',
   pigJump:'dino-assets/小猪跳跃.webp', mountain:'dino-assets/山.webp',
-  bg:'游戏开始底图.png', onion:'dino-assets/葱的原始状态.webp',
+  bg:'游戏开始页面/游戏开始底图.webp', gameBg:'游戏开始页面/游戏页面.png', onion:'dino-assets/葱的原始状态.webp',
   garlic:'dino-assets/蒜的原始状态.webp', radish:'dino-assets/萝卜的原始状态.webp',
   pot:'dino-assets/锅_opt.gif', gameOver:'dino-assets/游戏结束.webp',
   heartF:'dino-assets/有命的爱心.webp', heartE:'dino-assets/没命的爱心.webp',
   backBtn:'dino-assets/等待界面/返回键.webp',
-  miniBtn:'dino-assets/等待界面/小程序按钮.webp', dineIcon:'dino-assets/等待界面/堂食标志.webp',
+  miniBtn:'dino-assets/等待界面/小程序按钮.webp', dineIcon:'游戏开始页面/堂食图标.png',
   dineAddr:'dino-assets/等待界面/堂食地址.webp', statusBg:'dino-assets/等待界面/制作中状态条背景.webp',
   pigStir:'小猪搅拌面条_nobg_opt.gif', menuImg:'dino-assets/等待界面/菜单.webp',
   scoreLabel:'dino-assets/分数：.webp', recordLabel:'dino-assets/记录：.webp',
@@ -4602,7 +4732,7 @@ function load(){
 function rst(){
   pig = {x:PX, y:GY-55, vy:0, jumping:false, w:80, h:55}; obs = []; pot = {x:-150, w:110, h:118};
   score = 0; lives = 2; spd = IS; fc = 0; nObs = 80; inv = 0; mtn = 0; otm = 0;
-  mtnOffset = 0; mtnTargetY = 0; uiCurrY = GY-140; uiTargetY = GY-140; ovlCurrH = 300; ovlTargetH = 300; gyOffset = 0; gyTargetY = 0;
+  mtnOffset = 0; mtnTargetY = 0; uiCurrY = GY-140; uiTargetY = GY-140; gyOffset = 0; gyTargetY = 0;
   _rankY = -300; _rankVy = 0; _rankBounce = 0; _rankDone = true;
 }
 function jp(){ if (!pig.jumping) { pig.vy = JV; pig.jumping = true; } }
@@ -4636,39 +4766,23 @@ function upd(){
 }
 
 function upPig(){
-  if (gs === ST.EMPTY) { pge.style.display = 'none'; pgeIdle.style.display = 'none'; return; }
-  if (gs === ST.IDLE) {
-    pge.style.display = 'none';
-    pgeIdle.style.display = ''; pgeIdle.src = P.pigStand;
-    pgeIdle.style.left = '36px'; pgeIdle.style.top = '754px'; pgeIdle.style.width = '55px'; pgeIdle.style.height = '39px';
-    return;
-  }
+  // IDLE/EMPTY: bg image already has pig UI — hide all sprites
+  if (gs === ST.EMPTY || gs === ST.IDLE) { pge.style.display = 'none'; pgeIdle.style.display = 'none'; return; }
+  // PLAY: show running or jumping pig sprite
   pgeIdle.style.display = 'none';
   var showRun = gs === ST.PLAY && !pig.jumping && !(inv>0 && Math.floor(inv/5)%2===0);
   if (showRun) { pge.style.display = ''; if (pge.getAttribute('d') !== P.pigRun) { pge.src = P.pigRun; pge.setAttribute('d', P.pigRun); } pge.style.left = pig.x+'px'; pge.style.top = (GY-59+gyOffset)+'px'; pge.style.width = '85px'; pge.style.height = '59px'; }
   else { pge.style.display = 'none'; }
 }
 function upPot(){
-  if (gs === ST.OVER || gs === ST.EMPTY) { pte.style.display = 'none'; pteIdle.style.display = 'none'; return; }
-  if (gs === ST.IDLE) {
-    pte.style.display = 'none';
-    pteIdle.style.display = ''; pteIdle.src = 'dino-assets/锅的原始状态.webp';
-    pteIdle.style.left = '12px'; pteIdle.style.top = '752px'; pteIdle.style.width = '85px'; pteIdle.style.height = '93px'; pteIdle.style.transform = '';
-    return;
-  }
+  // Pot is already in the background image
+  pte.style.display = 'none';
   pteIdle.style.display = 'none';
-  pte.style.display = '';
-  if (pte.getAttribute('d') !== P.pot) { pte.src = P.pot; pte.setAttribute('d', P.pot); }
-  pte.style.left = pot.x+'px'; pte.style.top = (GY-pot.h+10+gyOffset)+'px'; pte.style.width = pot.w+'px'; pte.style.height = pot.h+'px'; pte.style.transform = '';
 }
 
 function dBg(){
-  // Only show Figma-exported bg during IDLE/EMPTY — during PLAY/OVER the static
-  // pig/pot/veggies in the export would ghost behind the animated sprites.
-  if (gs === ST.IDLE || gs === ST.EMPTY) {
-    if (IMG.bg) { bctx.drawImage(IMG.bg, 0, 0, W, H); return; }
-  }
-  var g = bctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#F4E9E6'); g.addColorStop(0.6,'#ECDCC0'); g.addColorStop(1,'#D4A574'); bctx.fillStyle = g; bctx.fillRect(0,0,W,H);
+  if (gs===ST.PLAY||gs===ST.OVER) { if (IMG.gameBg) { bctx.drawImage(IMG.gameBg, -4, -4, W+8, H+8); } }
+  else { if (IMG.bg) { bctx.drawImage(IMG.bg, -4, -4, W+8, H+8); } }
 }
 function dHeader(){
   bctx.textAlign = 'left';
@@ -4685,7 +4799,6 @@ function dOver(){
   ctx.textAlign = 'left';
 }
 
-var ovlTargetH = 300, ovlCurrH = 300;
 var uiTargetY = GY-140, uiCurrY = GY-140;
 var mtnTargetY = 0, mtnOffset = 0;
 var gyOffset = 0, gyTargetY = 0;
@@ -4707,72 +4820,130 @@ function dUI(){
 }
 function drawBg(){ bctx.clearRect(0,0,W,H); dBg(); dHeader(); }
 function dVeggiesIdle(){
-  if (gs !== ST.IDLE) return;
-  // Figma positions scaled 2x (402px wide)
-  var veggies = [
-    {k:'garlic', x:244, w:30, h:28},
-    {k:'radish', x:278, w:34, h:34},
-    {k:'onion', x:348, w:24, h:34},
-  ];
-  for (var i = 0; i < veggies.length; i++) {
-    var v = veggies[i], im = IMG[v.k];
-    if (!im) continue;
-    var vy = GY - v.h + gyOffset;
-    ctx.drawImage(im, v.x, vy, v.w, v.h);
-  }
+  // Veggies are already in the background image
 }
-function drawGame(){ ctx.clearRect(0,0,W,H); if (gs===ST.EMPTY) return; dMtn(); dVeggiesIdle(); if (gs===ST.IDLE||gs===ST.PLAY||gs===ST.OVER) dPig(); if (gs===ST.PLAY) { dObs(); dUI(); } if (gs===ST.OVER) dObs(); if (gs===ST.OVER&&otm>20) dOver(); }
+function drawGame(){ ctx.clearRect(0,0,W,H); if (gs===ST.EMPTY||gs===ST.IDLE) return; dGround(); dMtn(); dVeggiesIdle(); dPig(); if (gs===ST.PLAY) { dObs(); dUI(); } if (gs===ST.OVER) dObs(); if (gs===ST.OVER&&otm>20) dOver(); }
+function dGround(){
+  var gy = GY + gyOffset;
+  ctx.strokeStyle = '#B8865A'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+}
 function draw(){ drawBg(); drawGame(); }
 
 function setupDOM(){
-  // Hide hero/store-info/gradient — all baked into the Figma-exported canvas bg image
-  var heroImg = document.getElementById('waiting-hero');
-  if (heroImg) heroImg.style.display = 'none';
+  // Show background image and overlays
+  var bgImg = document.getElementById('waitingBgImg');
+  if (bgImg) { bgImg.style.display = ''; bgImg.src = '游戏开始页面/游戏开始底图.webp'; }
   var storeInfo = document.querySelector('.waiting-store-info');
-  if (storeInfo) storeInfo.style.display = 'none';
-  var waitingTop = document.getElementById('waiting-top');
-  if (waitingTop) waitingTop.style.display = 'none';
+  if (storeInfo) storeInfo.style.display = '';
+  // Show pig status overlay
+  var pigStatus = document.getElementById('waitingPigStatus');
+  if (pigStatus) { pigStatus.style.display = ''; pigStatus.style.opacity = '1'; }
+  var m = document.getElementById('pigStatusMain');
+  if (m) m.textContent = '我在制作中';
+  var s = document.getElementById('pigStatusSub');
+  if (s) s.style.display = '';
 
-  // Minimal scroll area — status bar and card are in the Figma bg image
+  // Populate food card with order items
+  populateFoodCard(window._dinoOrderItems || []);
+
+  // Hide canvas game elements in IDLE state
+  if (bcv) bcv.style.display = 'none';
+  if (cv) cv.style.display = 'none';
+
+  // Scroll area setup
   sinner.innerHTML = '<div style="height:700px;"></div>';
   scr.style.top = SCR_Y+'px';
   scr.style.height = (H-SCR_Y)+'px';
-  sbtn.style.left = '136px'; sbtn.style.top = '710px'; sbtn.style.width = '140px'; sbtn.style.height = '46px'; sbtn.style.display = 'flex';
+  sbtn.style.display = 'flex';
 }
-function endGame(){ resetToIdle(); }
+
+function populateFoodCard(items) {
+  var container = document.getElementById('waitingFoodItems');
+  var totalEl = document.getElementById('waitingFoodTotal');
+  if (!container) return;
+
+  var total = 0;
+  var html = '';
+  if (items && items.length > 0) {
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var price = parseFloat(item.price) || 0;
+      var qty = parseInt(item.qty) || 1;
+      total += price * qty;
+      var imgSrc = getCartImg(item.name);
+      html += '<div class="food-item">';
+      html += '<div class="food-item-img"><img src="'+imgSrc+'" alt="" onerror="this.src=\'购物车菜品/清空.webp\'"></div>';
+      html += '<div class="food-item-info"><div class="food-item-name">'+item.name+'</div>';
+      if (item.spec) html += '<div class="food-item-spec">'+item.spec+'</div>';
+      html += '</div>';
+      html += '<div class="food-item-price">&yen;'+(price*qty).toFixed(1)+'</div>';
+      html += '</div>';
+    }
+  } else {
+    html = '<div class="food-item"><div class="food-item-info"><div class="food-item-name">暂无订单</div></div></div>';
+  }
+  container.innerHTML = html;
+  if (totalEl) totalEl.textContent = '￥'+total.toFixed(1);
+}
+function endGame(){
+  var bgImg = document.getElementById('waitingBgImg');
+  if (bgImg) bgImg.src = '游戏开始页面/游戏页面.png';
+  var m = document.getElementById('pigStatusMain');
+  if (m) m.textContent = '已出餐，等待上菜';
+  var s = document.getElementById('pigStatusSub');
+  if (s) s.style.display = 'none';
+  resetToIdle();
+}
 
 sbtn.addEventListener('click', function(e){ e.stopPropagation(); if (gs===ST.IDLE) start(); });
 sbtn.addEventListener('touchstart', function(e){ e.stopPropagation(); e.preventDefault(); if (gs===ST.IDLE) start(); });
 rbtn.addEventListener('click', function(e){ e.stopPropagation(); if (gs===ST.OVER&&otm>20) start(); });
 rbtn.addEventListener('touchstart', function(e){ e.stopPropagation(); e.preventDefault(); if (gs===ST.OVER&&otm>20) start(); });
-ebtn.addEventListener('click', function(e){ e.stopPropagation(); resetToIdle(); });
-ebtn.addEventListener('touchstart', function(e){ e.stopPropagation(); e.preventDefault(); resetToIdle(); });
+ebtn.addEventListener('click', function(e){ e.stopPropagation(); endGame(); });
+ebtn.addEventListener('touchstart', function(e){ e.stopPropagation(); e.preventDefault(); endGame(); });
 if (backBtn) backBtn.addEventListener('touchstart', function(e){ e.stopPropagation(); e.preventDefault(); hideWaitingPage(); });
 
 function handleGI(e){
-  if (e.target.closest('#dino-start-dom') || e.target.closest('#dino-replay-dom') || e.target.closest('#dino-end-dom') || e.target.closest('.waiting-back-btn')) return;
+  if (e.target.closest('#dino-start-dom') || e.target.closest('#dino-replay-dom') || e.target.closest('#dino-end-dom') || e.target.closest('#waitingBackBtn')) return;
   if (gs === ST.PLAY) jp();
   else if (gs === ST.OVER && otm > 20) start();
 }
 container.addEventListener('click', handleGI);
-container.addEventListener('touchstart', function(e){ if (e.target.closest('#dino-start-dom')||e.target.closest('#dino-replay-dom')||e.target.closest('.waiting-back-btn')) return; e.preventDefault(); handleGI(e); }, {passive:false});
+container.addEventListener('touchstart', function(e){ if (e.target.closest('#dino-start-dom')||e.target.closest('#dino-replay-dom')||e.target.closest('#waitingBackBtn')) return; e.preventDefault(); handleGI(e); }, {passive:false});
 container.addEventListener('touchmove', function(e){ if (e.target.closest('#dino-scroll')) return; e.preventDefault(); }, {passive:false});
 document.addEventListener('keydown', function(e){ if (e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW') { e.preventDefault(); if (gs===ST.IDLE) start(); else if (gs===ST.OVER&&otm>20) start(); else jp(); } });
 
-function start(){ rst(); gs = ST.PLAY; sbtn.style.display = 'none'; obtn.style.display = 'none'; bovl.style.display = ''; cv.style.display = ''; pge.style.display = ''; pte.style.display = ''; pgeIdle.style.display = 'none'; pteIdle.style.display = 'none'; ovlTargetH = H; uiTargetY = GY-640; mtnTargetY = -200; gyTargetY = -50;
+function start(){ rst(); gs = ST.PLAY; sbtn.style.display = 'none'; obtn.style.display = 'none'; uiTargetY = GY-640; mtnTargetY = -200; gyTargetY = -50;
+  var bgImg = document.getElementById('waitingBgImg');
+  if (bgImg) bgImg.src = '游戏开始页面/游戏开始底图.webp';
+  var pm = document.getElementById('pigStatusMain');
+  if (pm) pm.textContent = '我在制作中';
+  var ps = document.getElementById('pigStatusSub');
+  if (ps) ps.style.display = '';
   document.getElementById('navBar').style.display = 'none'; container.style.zIndex = '300';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
+  var foodCard = document.getElementById('waitingFoodCard');
+  if (foodCard) { foodCard.style.opacity = '0'; foodCard.style.pointerEvents = 'none'; }
+  var pigStatus = document.getElementById('waitingPigStatus');
+  if (pigStatus) pigStatus.style.opacity = '0';
+  if (bcv) bcv.style.display = '';
+  if (cv) cv.style.display = '';
 }
-function resetToIdle(){ rst(); gs = ST.EMPTY; sbtn.style.display = 'none'; obtn.style.display = 'none'; ovlTargetH = 300; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0; bovl.style.display = 'none'; cv.style.display = 'none'; pte.style.display = 'none'; pge.style.display = 'none'; pgeIdle.style.display = 'none'; pteIdle.style.display = 'none';
+function resetToIdle(){ rst(); gs = ST.EMPTY; sbtn.style.display = 'none'; obtn.style.display = 'none'; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0;
   if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; }
   document.getElementById('navBar').style.display = ''; container.style.zIndex = '100';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
-  var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = 'none';
+  var foodCard = document.getElementById('waitingFoodCard');
+  if (foodCard) { foodCard.style.opacity = '1'; foodCard.style.pointerEvents = 'auto'; }
+  var pigStatus = document.getElementById('waitingPigStatus');
+  if (pigStatus) pigStatus.style.opacity = '1';
+  if (bcv) bcv.style.display = 'none';
+  if (cv) cv.style.display = 'none';
 }
 var _loopRaf = 0;
 function loop(){ if (!container.classList.contains('show')) { _loopRaf = 0; return; }
   upd(); upPig(); upPot();
-  ovlCurrH += (ovlTargetH-ovlCurrH)*0.08; bovl.style.height = Math.round(ovlCurrH)+'px';
   mtnOffset += (mtnTargetY-mtnOffset)*0.08;
   gyOffset += (gyTargetY-gyOffset)*0.08;
   draw();
@@ -4798,18 +4969,17 @@ window.showWaitingPage = function(items){
       ld.style.display = 'none';
       rst(); gs = ST.IDLE;
       setupDOM();
-      var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = '';
       requestAnimationFrame(loop);
     });
   } else {
     setupDOM();
+    populateFoodCard(window._dinoOrderItems || []);
     rst(); gs = ST.IDLE;
     sbtn.style.display = 'flex'; obtn.style.display = 'none';
-    bovl.style.display = ''; cv.style.display = ''; pge.style.display = ''; pte.style.display = '';
-    ovlTargetH = 300; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0;
-    ovlCurrH = 300; uiCurrY = GY-140; mtnOffset = 0; gyOffset = 0;
-    var tt = document.querySelector('.waiting-top-title'); if (tt) tt.style.display = '';
-    // 重新启动游戏循环
+    uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0;
+    uiCurrY = GY-140; mtnOffset = 0; gyOffset = 0;
+    var foodCard = document.getElementById('waitingFoodCard');
+    if (foodCard) { foodCard.style.opacity = '1'; foodCard.style.pointerEvents = 'auto'; }
     if (_loopRaf) { cancelAnimationFrame(_loopRaf); }
     _loopRaf = requestAnimationFrame(loop);
   }
