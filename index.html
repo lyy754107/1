@@ -1596,8 +1596,8 @@ html.webp .confirm-top {
 }
 #page-waiting.show { display:block; opacity:1; pointer-events:auto; }
 #dino-bg-cv {
-  display:block; width:412px; height:874px;
-  position:absolute; left:-5px; top:0; z-index:1; pointer-events:none;
+  display:block; width:402px; height:874px;
+  position:absolute; left:0; top:0; z-index:1; pointer-events:none;
 }
 #dino-game-cv {
   display:block; width:402px; height:874px;
@@ -4548,7 +4548,7 @@ init();
 var cv = document.getElementById('dino-game-cv'), ctx = cv.getContext('2d');
 var bcv = document.getElementById('dino-bg-cv'), bctx = bcv.getContext('2d');
 var DPR = Math.min(window.devicePixelRatio || 1, 2);
-bcv.width = 412 * DPR; bcv.height = 874 * DPR; bcv.style.width = '412px'; bcv.style.height = '874px';
+bcv.width = 402 * DPR; bcv.height = 874 * DPR; bcv.style.width = '402px'; bcv.style.height = '874px';
 bctx.scale(DPR, DPR);
 cv.width = 402 * DPR; cv.height = 874 * DPR; cv.style.width = '402px'; cv.style.height = '874px';
 ctx.scale(DPR, DPR);
