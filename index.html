@@ -1900,7 +1900,7 @@ html.webp .confirm-top {
   </div>
 
   <!-- ===== Menu Page ===== -->
-  <div id="page-menu" style="border-top:4px solid red;">
+  <div id="page-menu">
     <!-- Fixed top bar -->
     <div class="menu-top-bar">
       <img class="menu-top-search" src="搜索框.webp" alt="">
@@ -1946,14 +1946,14 @@ html.webp .confirm-top {
   </div>
 
   <!-- Order Page -->
-  <div id="page-order" style="display:none;border-top:4px solid #0f0;">
+  <div id="page-order" style="display:none;">
     <div class="order-top-bar">
       <span class="order-top-title">我的订单</span>
     </div>
     <div class="order-list" id="orderList"></div>
     <div class="order-load-more" id="orderLoadMore" style="display:none;">点击或继续滑动加载历史订单~</div>
   </div>
-  <div id="page-me" style="display:none;border-top:4px solid blue;">
+  <div id="page-me" style="display:none;">
     <div class="me-profile">
       <div class="me-avatar"><img src="头像@4x.webp" alt=""></div>
       <div>
@@ -5316,6 +5316,5 @@ setTimeout(function(){ load(); }, 200);
 })();
 </script>
 
-<div id="dbgInfo" style="position:fixed;top:0;left:0;z-index:99999;background:red;color:#fff;font-size:12px;padding:4px 8px;display:none;pointer-events:none;"></div>
 </body>
 </html>
