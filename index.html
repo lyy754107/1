@@ -2104,7 +2104,7 @@ html.webp .confirm-top {
   <div id="page-waiting">
     <img class="waiting-bg-img" id="waitingBgImg" src="游戏开始页面/游戏开始底图.webp" alt="">
 
-    <div class="waiting-back-btn" id="waitingBackBtn" onclick="hideWaitingPage()"></div>
+    <img class="waiting-back-btn" id="waitingBackBtn" src="返回.webp" onclick="hideWaitingPage()" alt="返回" style="display:none;">
 
     <div class="waiting-store-info">
       <img class="store-dine-icon" src="游戏开始页面/堂食图标.png" alt="">
@@ -5223,6 +5223,7 @@ function start(){ rst(); gs = ST.PLAY; sbtn.style.display = 'none'; obtn.style.d
   if (ps) ps.style.display = '';
   document.getElementById('navBar').style.display = 'none'; container.style.zIndex = '300';
   var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.remove('show');
+  if (backBtn) backBtn.style.display = 'none';
   var foodCard = document.getElementById('waitingFoodCard');
   if (foodCard) { foodCard.style.opacity = '0'; foodCard.style.pointerEvents = 'none'; }
   var pigStatus = document.getElementById('waitingPigStatus');
@@ -5234,8 +5235,8 @@ function start(){ rst(); gs = ST.PLAY; sbtn.style.display = 'none'; obtn.style.d
 }
 function resetToIdle(){ rst(); gs = ST.EMPTY; sbtn.style.display = 'none'; obtn.style.display = 'none'; uiTargetY = GY-140; mtnTargetY = 0; gyTargetY = 0;
   if (_loopRaf) { cancelAnimationFrame(_loopRaf); _loopRaf = 0; }
-  document.getElementById('navBar').style.display = ''; container.style.zIndex = '100';
-  var nbg = document.querySelector('.nav-bar-bg'); if (nbg) nbg.classList.add('show');
+  container.style.zIndex = '100';
+  if (backBtn) backBtn.style.display = '';
   var foodCard = document.getElementById('waitingFoodCard');
   if (foodCard) { foodCard.style.opacity = '1'; foodCard.style.pointerEvents = 'auto'; }
   var pigStatus = document.getElementById('waitingPigStatus');
