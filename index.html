@@ -130,6 +130,7 @@ body {
   border-radius:999px;
   transition:left 200ms ease-in, width 200ms ease-in;
   pointer-events:none;
+  will-change:left, width;
 }
 .seg-pill.red   { background:#CA2626; }
 .seg-pill.beige { background:#e3c9a4; }
@@ -198,6 +199,7 @@ body {
 }
 .bowl-toppings img.spin-in {
   animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  will-change: transform;
 }
 @keyframes popIn {
   0%   { transform: scale(0); }
@@ -305,28 +307,6 @@ body {
 }
 .nav-item img { max-width:100%; max-height:100%; object-fit:contain; }
 .nav-item:active { opacity:0.7; }
-
-/* ===== Loading Overlay ===== */
-@keyframes loadingIn { from { opacity:0; } to { opacity:1; } }
-.loading-overlay {
-  position:absolute; left:0; top:0;
-  width:402px; height:874px;
-  z-index:9999; display:none;
-  background:#FFFCF8;
-  flex-direction:column; align-items:center; justify-content:center;
-  transition:opacity 0.4s ease-out;
-}
-.loading-overlay.show { display:flex; animation:loadingIn 0.6s ease; }
-.loading-gif {
-  width:200px; height:200px;
-  object-fit:contain;
-}
-.loading-overlay.fade-out { opacity:0; }
-.loading-text {
-  margin-top:16px;
-  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
-  font-size:15px; color:#000; font-weight:500;
-}
 
 /* ===== Placeholder Pages (orders, me) ===== */
 #page-order, #page-me {
@@ -1733,48 +1713,6 @@ html.webp .confirm-top {
 }
 .entry-coupon-img:active { opacity:0.85; }
 
-/* ===== Loading Page ===== */
-#loadingPage {
-  position:absolute; left:0; top:0;
-  width:402px; height:874px;
-  z-index:500;
-  background:#FFFCF8;
-  display:flex; flex-direction:column;
-  justify-content:center; align-items:center;
-  transition: opacity 0.5s ease;
-}
-#loadingPage.hide {
-  opacity:0; pointer-events:none;
-}
-#loadingPage.done {
-  display:none;
-}
-
-.loading-bar-track {
-  width:280px; height:6px;
-  background:rgba(0,0,0,0.08);
-  border-radius:3px;
-  overflow:hidden;
-}
-.loading-bar-fill {
-  height:100%; width:0%;
-  background: linear-gradient(90deg, #CA2626, #e84848);
-  border-radius:3px;
-  transition: width 0.3s ease;
-}
-.loading-pct {
-  margin-top:12px;
-  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
-  font-size:13px; font-weight:500;
-  color:rgba(0,0,0,0.45);
-}
-.loading-tip {
-  margin-top:8px;
-  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
-  font-size:11px; font-weight:400;
-  color:rgba(0,0,0,0.3);
-}
-
 /* ===== Pig Runner Waiting Game ===== */
 #page-waiting {
   position:absolute; left:0; top:0;
@@ -1791,12 +1729,6 @@ html.webp .confirm-top {
 #dino-game-cv {
   display:block; width:402px; height:874px;
   position:absolute; left:0; top:0; z-index:5; pointer-events:none;
-}
-#dino-loading {
-  position:absolute; left:0; top:0; width:100%; height:100%;
-  display:flex; justify-content:center; align-items:center;
-  color:#fff; font-size:20px; z-index:99;
-  background:rgba(0,0,0,0.5);
 }
 #dino-scroll {
   position:absolute; z-index:5;
@@ -1834,21 +1766,42 @@ html.webp .confirm-top {
   height:46px; cursor:pointer;
 }
 
+/* ===== Asset Loading Overlay ===== */
+#assetLoading {
+  position:fixed; left:0; top:0; width:100vw; height:100vh;
+  z-index:99999; background:#1a1a1a;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:opacity 0.35s ease;
+}
+#assetLoading.done { opacity:0; pointer-events:none; }
+#assetLoading .load-title {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:20px; font-weight:600; color:#fff; margin-bottom:28px;
+}
+#assetLoading .load-bar-track {
+  width:220px; height:4px; background:rgba(255,255,255,0.18);
+  border-radius:2px; overflow:hidden;
+}
+#assetLoading .load-bar-fill {
+  height:100%; width:0%; background:#CA2626;
+  border-radius:2px; transition:width 0.12s linear;
+}
+#assetLoading .load-pct {
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-size:12px; color:rgba(255,255,255,0.45); margin-top:12px;
+}
+
 </style>
 </head>
 <body>
 
+<div id="assetLoading">
+  <div class="load-title">Noodle App</div>
+  <div class="load-bar-track"><div class="load-bar-fill" id="loadBarFill"></div></div>
+  <div class="load-pct" id="loadPct">0%</div>
+</div>
+
 <div class="app">
-  <!-- Loading Page -->
-  <div id="loadingPage">
-
-    <div class="loading-bar-track">
-      <div class="loading-bar-fill" id="loadingBarFill"></div>
-    </div>
-    <div class="loading-pct" id="loadingPct">准备中...</div>
-    <div class="loading-tip" id="loadingTip"></div>
-  </div>
-
   <!-- Splash Ad Overlay -->
   <div class="splash-ad" id="splashAd">
     <div class="splash-curtain"></div>
@@ -1866,20 +1819,20 @@ html.webp .confirm-top {
   <!-- Entry Popup (Figma: 首页 最终版 弹窗) -->
   <div class="entry-popup" id="entryPopup">
     <div class="entry-popup-mask" onclick="dismissEntryPopup();revealHomePage();"></div>
-    <img class="entry-popup-title" src="入场动画 不看广告/一起自制小面.png" alt="">
+    <img class="entry-popup-title" src="入场动画 不看广告/一起自制小面.webp" alt="">
     <div class="entry-popup-panel" id="entryPopupPanel">
-      <img class="entry-popup-bg" src="入场动画 不看广告/弹窗底图.png" alt="">
+      <img class="entry-popup-bg" src="入场动画 不看广告/弹窗底图.webp" alt="">
       <div class="entry-popup-handle" id="entryPopupHandle"></div>
-      <img class="entry-btn-img btn-menu" src="入场动画 不看广告/菜单点餐.png" onclick="entryChooseMenu()" alt="菜单点餐">
-      <img class="entry-btn-img btn-custom" src="入场动画 不看广告/自由点餐.png" onclick="entryChooseCustom()" alt="自由点餐">
-      <img class="entry-coupon-img" src="入场动画 不看广告/端午福利优惠券.png" onclick="entryClaimCoupon()" alt="端午福利优惠券">
+      <img class="entry-btn-img btn-menu" src="入场动画 不看广告/菜单点餐.webp" onclick="entryChooseMenu()" alt="菜单点餐">
+      <img class="entry-btn-img btn-custom" src="入场动画 不看广告/自由点餐.webp" onclick="entryChooseCustom()" alt="自由点餐">
+      <img class="entry-coupon-img" src="入场动画 不看广告/端午福利优惠券.webp" onclick="entryClaimCoupon()" alt="端午福利优惠券">
     </div>
   </div>
 
   <div class="app-content">
   <!-- Full background photo -->
-  <div class="bg-photo" id="bgPhotoMain"><picture><source srcset="首页底图.webp" type="image/webp"><img src="首页底图.png" alt=""></picture></div>
-  <div class="bg-photo" id="bgPhotoCancel" style="opacity:0"><img src="取消闪屏广告底图.jpg" alt=""></div>
+  <div class="bg-photo" id="bgPhotoMain"><img src="首页底图.webp" alt=""></div>
+  <div class="bg-photo" id="bgPhotoCancel" style="opacity:0"><img src="取消闪屏广告底图.webp" alt=""></div>
   <div class="bg-overlay"></div>
 
 
@@ -2160,8 +2113,8 @@ html.webp .confirm-top {
     </div>
 
     <div class="waiting-pig-status" id="waitingPigStatus">
-      <img class="pig-status-avatar" id="pigStatusStir" src="游戏开始页面/小猪搅拌面条.png" alt="">
-      <img class="pig-status-bubble" src="游戏开始页面/气泡.png" alt="">
+      <img class="pig-status-avatar" id="pigStatusStir" src="游戏开始页面/小猪搅拌面条.webp" alt="">
+      <img class="pig-status-bubble" src="游戏开始页面/气泡.webp" alt="">
       <div class="pig-status-texts">
         <div class="pig-status-main" id="pigStatusMain">我在制作中</div>
         <div class="pig-status-sub" id="pigStatusSub">还有4分钟</div>
@@ -2190,14 +2143,6 @@ html.webp .confirm-top {
       <div id="dino-end-dom">结束游戏</div>
       <img id="dino-replay-dom" src="dino-assets/重玩键.webp" alt="重玩">
     </div>
-    <div id="dino-loading">加载中...</div>
-  </div>
-
-  <!-- Loading overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <img class="loading-gif" id="loadingGif1" src="小猪搅拌面条.gif" style="display:block">
-    <img class="loading-gif" id="loadingGif2" src="小猪入锅.gif" style="display:none">
-    <span class="loading-text">正在准备美味...</span>
   </div>
 
   <!-- Nav bar (outside app-content to stay above cart sheet) -->
@@ -2710,23 +2655,7 @@ function goCheckout() {
     return;
   }
   closeCartPanel();
-  // Show loading animation
-  var overlay = document.getElementById('loadingOverlay');
-  var gif1 = document.getElementById('loadingGif1');
-  var gif2 = document.getElementById('loadingGif2');
-  var text = overlay ? overlay.querySelector('.loading-text') : null;
-  if (gif1) gif1.style.display = 'none';
-  if (gif2) { gif2.style.display = 'block'; gif2.src = gif2.src; }
-  if (text) text.textContent = '正在烹饪美味...';
-  if (overlay) overlay.classList.add('show');
-  // Delay confirm page until overlay is visible
-  setTimeout(function() { showConfirmPage(); }, 600);
-  setTimeout(function() {
-    if (overlay) overlay.classList.add('fade-out');
-    setTimeout(function() {
-      if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
-    }, 400);
-  }, 1500);
+  showConfirmPage();
 }
 
 // ===== Detail Page =====
@@ -3283,6 +3212,7 @@ function init() {
 
 function entranceAnimation() {
   const layer = document.getElementById('jiaotouLayer');
+  layer.style.opacity = ''; // restore from revealHomePage
   const items = [...layer.children];
   const origin = toppingDefs.find(t => t.name === '牛肉');
   const ox = origin.x, oy = origin.y;
@@ -3306,7 +3236,9 @@ function entranceAnimation() {
   items.sort((a, b) => {
     const na = a.querySelector('img').alt;
     const nb = b.querySelector('img').alt;
-    let aa = polarMap[na].angle, ab = polarMap[nb].angle;
+    var pa = polarMap[na], pb = polarMap[nb];
+    if (!pa || !pb) return 0;
+    let aa = pa.angle, ab = pb.angle;
     if (aa < originAngle) aa += Math.PI * 2;
     if (ab < originAngle) ab += Math.PI * 2;
     return aa - ab;
@@ -3319,39 +3251,56 @@ function entranceAnimation() {
     el.style.opacity = '0';
   });
 
-  // Animate along arc using transform (GPU) from each item's own starting = 牛肉 pos
-  items.forEach((el) => {
-    const def = toppingDefs.find(t => t.name === el.querySelector('img').alt);
+  // Pre-compute animation data per item (no DOM reads or array scans during animation)
+  var animItems = [];
+  items.forEach(function(el) {
+    var name = el.querySelector('img').alt;
+    var def = toppingDefs.find(function(t) { return t.name === name; });
     if (!def) return;
-    const targetPolar = polarMap[def.name];
-    const targetAngle = targetPolar.angle;
-    const targetR = targetPolar.r;
-    const dAngleRaw = targetAngle - originAngle;
-    const dAngle = dAngleRaw < 0 ? dAngleRaw + Math.PI * 2 : dAngleRaw;
-    const speed = 0.002; // radians per ms
-    const duration = dAngle / speed;
+    var targetPolar = polarMap[def.name];
+    if (!targetPolar) return;
+    var dAngleRaw = targetPolar.angle - originAngle;
+    var dAngle = dAngleRaw < 0 ? dAngleRaw + Math.PI * 2 : dAngleRaw;
+    var speed = 0.002;
+    var duration = dAngle / speed;
+    animItems.push({ el:el, targetR:targetPolar.r, dAngle:dAngle, duration:duration });
+  });
 
-    el.style.opacity = '1';
-    const startTime = performance.now();
-
-    function step(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const curAngle = originAngle + dAngle * t;
-      const curX = cx + targetR * Math.cos(curAngle);
-      const curY = cy + targetR * Math.sin(curAngle);
-      el.style.transform = 'translate(' + (curX - ox) + 'px,' + (curY - oy) + 'px)';
-      if (t < 1) {
-        requestAnimationFrame(step);
+  // Single rAF loop for all items
+  var startTime = performance.now();
+  function stepAll(now) {
+    var allDone = true;
+    for (var i = 0; i < animItems.length; i++) {
+      var ai = animItems[i];
+      if (ai.done) continue;
+      var elapsed = now - startTime;
+      var t = Math.min(elapsed / ai.duration, 1);
+      var curAngle = originAngle + ai.dAngle * t;
+      var curX = cx + ai.targetR * Math.cos(curAngle);
+      var curY = cy + ai.targetR * Math.sin(curAngle);
+      ai.el.style.transform = 'translate(' + (curX - ox) + 'px,' + (curY - oy) + 'px)';
+      if (t >= 1) {
+        ai.el.style.left = curX + 'px';
+        ai.el.style.top = curY + 'px';
+        ai.el.style.transform = '';
+        ai.done = true;
       } else {
-        el.style.left = curX + 'px';
-        el.style.top = curY + 'px';
-        el.style.transform = '';
+        allDone = false;
       }
     }
+    if (!allDone) requestAnimationFrame(stepAll);
+  }
 
-    requestAnimationFrame(step);
+  animItems.forEach(function(ai) { ai.el.style.opacity = '1'; });
+  // Safety: any item not in animItems was hidden at line 3270 — snap to correct position and show
+  items.forEach(function(el) {
+    if (el.style.opacity !== '0') return;
+    var name = el.querySelector('img').alt;
+    var def = toppingDefs.find(function(t) { return t.name === name; });
+    if (def) { el.style.left = def.x + 'px'; el.style.top = def.y + 'px'; }
+    el.style.opacity = '1';
   });
+  requestAnimationFrame(stepAll);
 }
 
 function condimentEntrance() {
@@ -3360,65 +3309,82 @@ function condimentEntrance() {
   if (!items.length) return;
 
   const wandouIdx = condDefs.findIndex(c => c.name === '豌豆');
+  if (wandouIdx === -1 || !items[wandouIdx]) return;
   const wandouEl = items[wandouIdx];
   const scrollRect = scroll.getBoundingClientRect();
   const originX = wandouEl.getBoundingClientRect().left - scrollRect.left;
 
-  // Store each item's target x
-  const targets = items.map(el => ({
-    el,
-    targetX: el.getBoundingClientRect().left - scrollRect.left,
-  }));
+  // Pre-compute per-item data
+  var animItems = [];
+  items.forEach(function(el) {
+    var targetX = el.getBoundingClientRect().left - scrollRect.left;
+    animItems.push({ el:el, targetX:targetX });
+  });
 
   // Move all to 豌豆 position, hide with opacity 0
-  items.forEach(el => {
-    el.style.transition = 'none';
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(' + (originX - targets.find(t => t.el === el).targetX) + 'px)';
+  animItems.forEach(function(ai) {
+    ai.el.style.transition = 'none';
+    ai.el.style.opacity = '0';
+    ai.el.style.transform = 'translateX(' + (originX - ai.targetX) + 'px)';
   });
 
-  // Same total duration as topping arc (酸辣粉)
   const totalDuration = 3000;
-  const maxDist = Math.max(...targets.map(t => Math.abs(t.targetX - originX)));
+  const maxDist = Math.max.apply(null, animItems.map(function(ai) { return Math.abs(ai.targetX - originX); }));
   const startTime = performance.now();
 
-  targets.forEach(tgt => {
-    const el = tgt.el;
-    const dist = originX - tgt.targetX;
-    const dur = maxDist > 0 ? (Math.abs(dist) / maxDist) * totalDuration : 0;
+  // Pre-compute duration per item
+  animItems.forEach(function(ai) {
+    var dist = Math.abs(ai.targetX - originX);
+    ai.dur = maxDist > 0 ? (dist / maxDist) * totalDuration : 0;
+  });
 
-    function step(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(elapsed / dur, 1);
-      const offset = originX + (tgt.targetX - originX) * t;
-      el.style.transform = 'translateX(' + (offset - tgt.targetX) + 'px)';
-      el.style.opacity = t;
-      if (t < 1) {
-        requestAnimationFrame(step);
+  // Single rAF loop
+  function stepAll(now) {
+    var allDone = true;
+    for (var i = 0; i < animItems.length; i++) {
+      var ai = animItems[i];
+      if (ai.done) continue;
+      var elapsed = now - startTime;
+      var t = Math.min(elapsed / ai.dur, 1);
+      var offset = originX + (ai.targetX - originX) * t;
+      ai.el.style.transform = 'translateX(' + (offset - ai.targetX) + 'px)';
+      ai.el.style.opacity = t;
+      if (t >= 1) {
+        ai.el.style.transform = '';
+        ai.el.style.opacity = '';
+        ai.el.style.transition = '';
+        ai.done = true;
       } else {
-        el.style.transform = '';
-        el.style.opacity = '';
-        el.style.transition = '';
+        allDone = false;
       }
     }
+    if (!allDone) requestAnimationFrame(stepAll);
+  }
 
-    if (dur > 0) {
-      requestAnimationFrame(step);
-    } else {
-      el.style.transform = '';
-      el.style.opacity = '';
-    }
-  });
+  requestAnimationFrame(stepAll);
 }
 
 function renderJiaotou() {
-  document.getElementById('jiaotouLayer').innerHTML = toppingDefs.map(t => {
-    const sel = state.toppings.includes(t.name);
-    const sz = (t.w && t.h) ? `width:${t.w}px;height:${t.h}px;` : '';
-    return `<div class="jiaotou-item" onclick="toggleTopping('${t.name}',this)" style="left:${t.x}px;top:${t.y}px;${sz}">
-      <img src="${sel?t.s:t.u}" alt="${t.name}">
-    </div>`;
-  }).join('');
+  var layer = document.getElementById('jiaotouLayer');
+  var existing = layer.children;
+  if (existing.length === toppingDefs.length) {
+    // Incremental update — only swap src, skip full DOM rebuild
+    for (var i = 0; i < existing.length; i++) {
+      var t = toppingDefs[i];
+      var sel = state.toppings.includes(t.name);
+      var img = existing[i].querySelector('img');
+      var newSrc = sel ? t.s : t.u;
+      if (img.src !== newSrc) img.src = newSrc;
+    }
+  } else {
+    layer.innerHTML = toppingDefs.map(function(t) {
+      var sel = state.toppings.includes(t.name);
+      var sz = (t.w && t.h) ? 'width:'+t.w+'px;height:'+t.h+'px;' : '';
+      return '<div class="jiaotou-item" onclick="toggleTopping(\''+t.name+'\',this)" style="left:'+t.x+'px;top:'+t.y+'px;'+sz+'">'
+        + '<img src="'+(sel?t.s:t.u)+'" alt="'+t.name+'">'
+        + '</div>';
+    }).join('');
+  }
 }
 
 function renderCondiments() {
@@ -3549,7 +3515,6 @@ function randomize(e) {
 
   syncSegments();
   updateBowl();
-  updateBowlOverlays();
   updateNoodleSize();
   updatePrice();
 
@@ -3565,94 +3530,99 @@ function randomize(e) {
 }
 
 function toggleTopping(name, el) {
+  if (el.dataset.busy === '1') return;
   const idx = state.toppings.indexOf(name);
   const def = toppingDefs.find(t => t.name === name);
   const img = el.querySelector('img');
   const adding = idx === -1;
   const newSrc = adding ? def.s : def.u;
 
-  // Simple opacity crossfade — no DOM creation, no forced reflow
-  img.style.opacity = '0';
-  requestAnimationFrame(function() {
-    if (idx > -1) {
-      state.toppings.splice(idx, 1);
-      delete state.toppingSlots[name];
-      if (name === '酸辣粉') {
-        const pIdx = state.condiments.indexOf('花生');
-        if (pIdx > -1) state.condiments.splice(pIdx, 1);
-        renderCondiments();
-      }
-    } else {
-      state.toppings.push(name);
-      if (name !== '酸辣粉') {
-        const used = new Set(Object.values(state.toppingSlots));
-        const free = bowlSlots.map(function(_, i) { return i; }).filter(function(i) { return !used.has(i); });
-        if (free.length) {
-          state.toppingSlots[name] = free[Math.floor(Math.random() * free.length)];
-        }
-      }
-      if (name === '酸辣粉') {
-        if (!state.condiments.includes('花生')) {
-          state.condiments.push('花生');
-          renderCondiments();
-        }
-        if (state.method !== '干') {
-          state.method = '干';
-          syncSegments();
-        }
+  // Apply state change and image swap synchronously for instant feedback
+  el.dataset.busy = '1';
+  if (idx > -1) {
+    state.toppings.splice(idx, 1);
+    delete state.toppingSlots[name];
+    if (name === '酸辣粉') {
+      const pIdx = state.condiments.indexOf('花生');
+      if (pIdx > -1) state.condiments.splice(pIdx, 1);
+      renderCondiments();
+    }
+  } else {
+    state.toppings.push(name);
+    if (name !== '酸辣粉') {
+      const used = new Set(Object.values(state.toppingSlots));
+      const free = bowlSlots.map(function(_, i) { return i; }).filter(function(i) { return !used.has(i); });
+      if (free.length) {
+        state.toppingSlots[name] = free[Math.floor(Math.random() * free.length)];
       }
     }
-    img.src = newSrc;
-    img.style.opacity = '1';
+    if (name === '酸辣粉') {
+      if (!state.condiments.includes('花生')) {
+        state.condiments.push('花生');
+        renderCondiments();
+      }
+      if (state.method !== '干') {
+        state.method = '干';
+        syncSegments();
+      }
+    }
+  }
+  img.src = newSrc;
+  // Defer heavy bowl overlay update + price to next frame
+  requestAnimationFrame(function() {
     updateBowlOverlays();
     updatePrice();
+    el.dataset.busy = '';
   });
 }
 
 
 
-function syncSegments() {
-  // Method (做法) — red bg #e67f65, beige pill, dark sel / white unsel
-  document.querySelectorAll('#methodSeg .seg-label').forEach(l => {
-    const sel = l.textContent === state.method;
-    l.style.color = sel ? '#9e5d00' : '#fff';
-    if (sel) {
-      const pill = document.getElementById('methodPill');
-      pill.style.left = l.offsetLeft + 'px';
-      pill.style.width = l.offsetWidth + 'px';
-    }
+var _pillCache = null;
+function _initPillCache() {
+  _pillCache = {method:{}, portion:{}, spice:{}};
+  document.querySelectorAll('#methodSeg .seg-label').forEach(function(l) {
+    _pillCache.method[l.textContent] = {left:l.offsetLeft, width:l.offsetWidth};
   });
-
-  // Type (种类) — absolute labels, hardcoded Figma pill positions
-  const typePillPos = {'细面':[0,36], '细粉':[43,36], '刀削面':[80,67], '桂林米粉':[136,77]};
-  const [tl, tw] = typePillPos[state.noodleType];
-  document.getElementById('typePill').style.left = tl + 'px';
-  document.getElementById('typePill').style.width = tw + 'px';
-  document.querySelectorAll('#typeSeg .seg-label').forEach(l => {
+  document.querySelectorAll('#portionSeg .seg-label').forEach(function(l) {
+    _pillCache.portion[l.textContent] = {left:l.offsetLeft, width:l.offsetWidth};
+  });
+  document.querySelectorAll('#spiceSeg .seg-label').forEach(function(l) {
+    _pillCache.spice[l.textContent] = {left:l.offsetLeft, width:l.offsetWidth};
+  });
+}
+function syncSegments() {
+  if (!_pillCache) _initPillCache();
+  // Method
+  var mp = _pillCache.method[state.method];
+  document.getElementById('methodPill').style.left = mp.left + 'px';
+  document.getElementById('methodPill').style.width = mp.width + 'px';
+  document.querySelectorAll('#methodSeg .seg-label').forEach(function(l) {
+    l.style.color = l.textContent === state.method ? '#9e5d00' : '#fff';
+  });
+  // Type
+  var typePillPos = {'细面':[0,36], '细粉':[43,36], '刀削面':[80,67], '桂林米粉':[136,77]};
+  var tp = typePillPos[state.noodleType];
+  document.getElementById('typePill').style.left = tp[0] + 'px';
+  document.getElementById('typePill').style.width = tp[1] + 'px';
+  document.querySelectorAll('#typeSeg .seg-label').forEach(function(l) {
     l.style.color = l.textContent === state.noodleType ? '#9e5d00' : '#fff';
   });
-
-  // Portion (份量) — beige bg #e3c9a4, red pill, beige sel / dark unsel
-  document.querySelectorAll('#portionSeg .seg-label').forEach(l => {
-    const sel = l.textContent === state.portion;
+  // Portion
+  var pp = _pillCache.portion[state.portion];
+  document.getElementById('portionPill').style.left = pp.left + 'px';
+  document.getElementById('portionPill').style.width = pp.width + 'px';
+  document.querySelectorAll('#portionSeg .seg-label').forEach(function(l) {
+    var sel = l.textContent === state.portion;
     l.style.color = sel ? '#e3c9a4' : '#9e5d00';
     l.style.fontWeight = sel ? '600' : '500';
-    if (sel) {
-      const pill = document.getElementById('portionPill');
-      pill.style.left = l.offsetLeft + 'px';
-      pill.style.width = l.offsetWidth + 'px';
-    }
   });
-
-  // Spice (辣度) — beige bg #e3c9a4, red pill, beige sel / dark unsel
-  document.querySelectorAll('#spiceSeg .seg-label').forEach(l => {
-    const sel = l.textContent === state.spice;
-    l.style.color = sel ? '#e3c9a4' : '#9e5d00';
-    if (sel) {
-      const pill = document.getElementById('spicePill');
-      pill.style.left = l.offsetLeft + 'px';
-      pill.style.width = l.offsetWidth + 'px';
-    }
+  // Spice
+  var sp = _pillCache.spice[state.spice];
+  document.getElementById('spicePill').style.left = sp.left + 'px';
+  document.getElementById('spicePill').style.width = sp.width + 'px';
+  document.querySelectorAll('#spiceSeg .seg-label').forEach(function(l) {
+    l.style.color = l.textContent === state.spice ? '#e3c9a4' : '#9e5d00';
   });
 }
 
@@ -3663,29 +3633,30 @@ function toggleCondiment(name, el) {
   const img = el.querySelector('img');
   const adding = idx === -1;
   const newSrc = adding ? def.s : def.u;
-  const duration = 400;
 
   el.dataset.animating = '1';
-  img.style.backfaceVisibility = 'hidden';
-  img.style.transition = 'transform '+(duration/1000)+'s cubic-bezier(0.4,0,0.2,1)';
-  img.style.transform = 'rotateY(360deg)';
+  img.style.transition = 'transform 0.15s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease';
+  img.style.opacity = '0';
+  img.style.transform = 'scale(0.6)';
 
-  setTimeout(() => {
+  requestAnimationFrame(function() {
     if (adding) {
       state.condiments.push(name);
     } else {
       state.condiments.splice(idx, 1);
     }
     img.src = newSrc;
+    img.style.opacity = '1';
+    img.style.transform = 'scale(1)';
     updateBowlOverlays();
     updatePrice();
-  }, duration * 0.5);
+  });
 
   img.addEventListener('transitionend', function handler() {
     img.removeEventListener('transitionend', handler);
     img.style.transition = '';
     img.style.transform = '';
-    img.style.backfaceVisibility = '';
+    img.style.opacity = '';
     el.dataset.animating = '';
   });
 }
@@ -3695,16 +3666,8 @@ function switchTab(name) {
   var currentTab = navTabs.find(function(t) { return t.active; });
 
   if (currentTab && currentTab.name === '首页' && name === '菜单') {
-    var overlay = document.getElementById('loadingOverlay');
-    var gif1 = document.getElementById('loadingGif1');
-    var gif2 = document.getElementById('loadingGif2');
-    var text = overlay ? overlay.querySelector('.loading-text') : null;
-    if (gif1) { gif1.style.display = 'block'; gif1.src = gif1.src; }
-    if (gif2) gif2.style.display = 'none';
-    if (text) text.textContent = '正在准备美味...';
-    if (overlay) overlay.classList.add('show');
-    // Delay page switch until overlay is visible
-    setTimeout(function() { doSwitchTab(name); }, 600);
+    doSwitchTab(name);
+    // Preload assets in background
     var preloadRounds = 0, maxRounds = 5;
     function preloadTick() {
       preloadAllAssets();
@@ -3712,12 +3675,6 @@ function switchTab(name) {
       if (preloadRounds < maxRounds) setTimeout(preloadTick, 200);
     }
     setTimeout(preloadTick, 100);
-    setTimeout(function() {
-      if (overlay) overlay.classList.add('fade-out');
-      setTimeout(function() {
-        if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
-      }, 400);
-    }, 1500);
     return;
   }
 
@@ -3918,87 +3875,121 @@ function updateBowl() {
   updateBowlOverlays();
 }
 
+var _condimentPosCache = {};
 function _condimentPos(n) {
-  if (n === '芝麻') return 'left:50%;top:50%;transform:translate(-50%,-50%);';
-  if (n === '豌豆') return 'left:130px;top:96px;transform:translate(-50%,-50%);';
-  let h = 0; for (let i = 0; i < n.length; i++) h = ((h << 5) - h + n.charCodeAt(i)) | 0;
+  if (_condimentPosCache[n]) return _condimentPosCache[n];
+  if (n === '芝麻') return _condimentPosCache[n] = 'left:50%;top:50%;transform:translate(-50%,-50%);';
+  if (n === '豌豆') return _condimentPosCache[n] = 'left:130px;top:96px;transform:translate(-50%,-50%);';
+  var h = 0; for (var i = 0; i < n.length; i++) h = ((h << 5) - h + n.charCodeAt(i)) | 0;
   var angle = (h * 2.39996) % (Math.PI * 2);
   var dist = 20 + ((h * 3.14159) % 56);
-  return 'left:'+(96+Math.cos(angle)*dist)+'px;top:'+(96+Math.sin(angle)*dist)+'px;transform:translate(-50%,-50%);';
+  return _condimentPosCache[n] = 'left:'+(96+Math.cos(angle)*dist)+'px;top:'+(96+Math.sin(angle)*dist)+'px;transform:translate(-50%,-50%);';
 }
 
 function _toppingHTML(n, pos, isNew) {
-  var isZajiang = n === '杂酱';
-  var hw = isZajiang ? 42.5 : 60;
-  var szStyle = isZajiang ? 'width:85px;height:85px;' : '';
-  var animClass = isNew ? ' class="spin-in"' : '';
-  var animVars = isNew ? '--sx:'+(96-pos[0])+'px;--sy:'+(96-pos[1])+'px;' : '';
-  return '<img src="碗里浇头/'+n+'.webp" alt="'+n+'"'+animClass+' style="left:'+(pos[0]-hw)+'px;top:'+(pos[1]-hw)+'px;'+szStyle+animVars+'">';
+  var el = document.createElement('img');
+  el.src = '碗里浇头/'+n+'.webp';
+  el.alt = n;
+  el.style.left = (pos[0] - (n === '杂酱' ? 42.5 : 60))+'px';
+  el.style.top = (pos[1] - (n === '杂酱' ? 42.5 : 60))+'px';
+  if (n === '杂酱') { el.style.width = '85px'; el.style.height = '85px'; }
+  if (isNew) el.className = 'spin-in';
+  return el;
 }
 
 function _condimentHTML(n) {
-  var sz = n === '豌豆' ? 'width:80px;height:80px;' : '';
-  return '<img src="碗里小料/'+n+'.webp" alt="'+n+'" style="'+_condimentPos(n)+sz+'">';
+  var el = document.createElement('img');
+  el.src = '碗里小料/'+n+'.webp';
+  el.alt = n;
+  el.style.cssText = _condimentPos(n) + (n === '豌豆' ? 'width:80px;height:80px;' : '');
+  return el;
 }
 
+var _portionSizes = {中份:170, 大份:190, 巨大:210};
 function updateBowlOverlays() {
-  var portionSizes = {中份:170, 大份:190, 巨大:210};
-  var ps = portionSizes[state.portion] || 192;
+  var ps = _portionSizes[state.portion] || 192;
   var hasSuanlafen = state.toppings.includes('酸辣粉');
 
   // 酸辣粉
   var slfEl = document.getElementById('bowlSuanlafen');
   if (hasSuanlafen) {
-    if (!slfEl._hasSLF) {
-      slfEl.innerHTML = '<img src="碗里浇头/酸辣粉.webp" alt="酸辣粉" style="width:'+ps+'px;height:'+ps+'px;left:50%;top:50%;transform:translate(-50%,-50%);">';
-      slfEl._hasSLF = true;
+    if (!slfEl._img) {
+      slfEl._img = document.createElement('img');
+      slfEl._img.alt = '酸辣粉';
+      slfEl._img.src = '碗里浇头/酸辣粉.webp';
+      slfEl._img.style.cssText = 'left:50%;top:50%;transform:translate(-50%,-50%);';
+      slfEl.appendChild(slfEl._img);
     }
+    slfEl._img.style.width = ps+'px';
+    slfEl._img.style.height = ps+'px';
     slfEl.style.display = '';
   } else {
-    slfEl._hasSLF = false;
-    slfEl.innerHTML = '';
+    if (slfEl._img) { slfEl._img.remove(); slfEl._img = null; }
     slfEl.style.display = 'none';
   }
 
-  // Toppings — incremental update
+  // Toppings — persistent element cache, no destroy/recreate
   var otherToppings = state.toppings.filter(function(n) { return n !== '酸辣粉'; });
   var prevSet = new Set(state._prevBowlToppings || []);
   var spinIns = new Set(otherToppings.filter(function(n) { return !prevSet.has(n); }));
   state._prevBowlToppings = otherToppings.slice();
 
   var tpEl = document.getElementById('bowlToppings');
-  var currentImgs = tpEl.querySelectorAll('img');
-  var currentNames = new Set();
-  currentImgs.forEach(function(img) { currentNames.add(img.alt); });
+  if (!tpEl._cache) tpEl._cache = {};
+  var cache = tpEl._cache;
+  var activeSet = new Set(otherToppings);
 
-  // Remove toppings no longer selected
-  currentImgs.forEach(function(img) {
-    if (otherToppings.indexOf(img.alt) === -1) img.remove();
+  // Hide cached elements no longer selected
+  Object.keys(cache).forEach(function(cn) {
+    if (!activeSet.has(cn)) { cache[cn].style.display = 'none'; cache[cn].className = ''; }
   });
 
-  // Add new toppings
+  // Show/create elements for selected toppings
   otherToppings.forEach(function(n) {
-    if (!currentNames.has(n)) {
-      var pos;
-      if (n === '杂酱') { pos = [96, 96]; }
-      else { var si = state.toppingSlots[n]; pos = (si != null) ? bowlSlots[si] : [Math.random()*120+36, Math.random()*120+36]; }
-      var isNew = spinIns.has(n);
-      tpEl.insertAdjacentHTML('beforeend', _toppingHTML(n, pos, isNew));
+    var el = cache[n];
+    if (!el) {
+      el = document.createElement('img');
+      el.src = '碗里浇头/'+n+'.webp';
+      el.alt = n;
+      if (n === '杂酱') { el.style.width = '85px'; el.style.height = '85px'; }
+      tpEl.appendChild(el);
+      cache[n] = el;
     }
+    // Update position (slot may have changed since last add)
+    var pos;
+    if (n === '杂酱') { pos = [96, 96]; }
+    else { var si = state.toppingSlots[n]; pos = (si != null) ? bowlSlots[si] : [Math.random()*120+36, Math.random()*120+36]; }
+    el.style.left = (pos[0] - (n === '杂酱' ? 42.5 : 60))+'px';
+    el.style.top = (pos[1] - (n === '杂酱' ? 42.5 : 60))+'px';
+
+    if (spinIns.has(n)) {
+      el.className = 'spin-in';
+      el.addEventListener('animationend', function h() { el.removeEventListener('animationend', h); el.className = ''; });
+    }
+    el.style.display = '';
   });
 
-  // Condiments — incremental update
+  // Condiments — persistent element cache
   var bowlCondiments = state.condiments.filter(function(n) { return !(hasSuanlafen && n === '花生'); });
   var cdEl = document.getElementById('bowlCondiments');
-  var cdImgs = cdEl.querySelectorAll('img');
-  var cdNames = new Set();
-  cdImgs.forEach(function(img) { cdNames.add(img.alt); });
+  if (!cdEl._cache) cdEl._cache = {};
+  var cdCache = cdEl._cache;
+  var cdActive = new Set(bowlCondiments);
 
-  cdImgs.forEach(function(img) {
-    if (bowlCondiments.indexOf(img.alt) === -1) img.remove();
+  Object.keys(cdCache).forEach(function(cn2) {
+    if (!cdActive.has(cn2)) cdCache[cn2].style.display = 'none';
   });
   bowlCondiments.forEach(function(n) {
-    if (!cdNames.has(n)) cdEl.insertAdjacentHTML('beforeend', _condimentHTML(n));
+    var el = cdCache[n];
+    if (!el) {
+      el = document.createElement('img');
+      el.src = '碗里小料/'+n+'.webp';
+      el.alt = n;
+      el.style.cssText = _condimentPos(n) + (n === '豌豆' ? 'width:80px;height:80px;' : '');
+      cdEl.appendChild(el);
+      cdCache[n] = el;
+    }
+    el.style.display = '';
   });
 
   document.getElementById('bowlNoodles').style.display = hasSuanlafen ? 'none' : '';
@@ -4134,6 +4125,44 @@ function preloadAsset(src) {
   _preloaded[src] = true;
   var img = new Image();
   img.src = src;
+  // Force full decode so subsequent src swaps are instant
+  if (img.decode) img.decode().catch(function(){});
+}
+
+// Collect homepage-critical asset URLs (Phase 1: needed before user interacts)
+function collectHomepageAssetUrls() {
+  var urls = new Set();
+  function add(u) { if (u) urls.add(u); }
+  try {
+    // 1. All DOM images visible on homepage (splash, bowl, noodles, nav, popup background etc.)
+    document.querySelectorAll('img[src]').forEach(function(el) { var s = el.getAttribute('src'); if (!s || s.trim() === '') return; add(el.src); });
+    document.querySelectorAll('picture source[srcset]').forEach(function(el) { add(el.srcset); });
+
+    // 2. Noodle × spice combos + bowl broth images
+    ['细面','细粉','刀削面','桂林米粉'].forEach(function(t) {
+      ['微辣','爆辣','不辣'].forEach(function(s) { add('面/' + t + ' ' + s + '.webp'); });
+    });
+    ['微辣','爆辣','不辣'].forEach(function(s) { add('碗/' + s + '.webp'); });
+    add('碗/干碗.webp');
+
+    // 3. Bowl toppings & condiments (碗内 visualization)
+    ['排骨','牛肉','牛杂','红烧肉','肥肠','猪脚','鸡杂','酸辣粉','杂酱','香菇鸡'].forEach(function(n) { add('碗里浇头/' + n + '.webp'); });
+    ['葱','香菜','煎蛋','花生','芝麻','豌豆'].forEach(function(n) { add('碗里小料/' + n + '.webp'); });
+
+    // 4. Topping & condiment UI buttons (selected/unselected — most latency-sensitive)
+    if (typeof toppingDefs !== 'undefined') toppingDefs.forEach(function(t) { add(t.u); add(t.s); });
+    if (typeof condDefs !== 'undefined') condDefs.forEach(function(c) { add(c.u); add(c.s); });
+
+    // 5. Nav bar icons
+    ['首页','菜单','订单','我的'].forEach(function(n) {
+      add('导航栏/' + n + ' 未点击.webp'); add('导航栏/' + n + ' 点击.webp');
+    });
+
+    // 6. Price floating UI (bottom cart bar)
+    add('价格浮窗/碗.webp');
+    add('价格浮窗/碗（选中后）.webp');
+  } catch(e) {}
+  return Array.from(urls);
 }
 
 // Collect all unique asset URLs (fast synchronous scan)
@@ -4284,132 +4313,54 @@ function loadAssetsTracked(urls, onProgress, onDone) {
 }
 
 // Fire-and-forget preload (for switchTab / dismissSplash)
+// Two-phase preload with loading screen & progress bar
+// Phase 1: homepage-critical assets (topping buttons, bowl, noodles, nav) → then show splash
+// Phase 2: remaining assets loaded in background while user browses
+function startPhasedPreload() {
+  var bar = document.getElementById('loadBarFill');
+  var pct = document.getElementById('loadPct');
+  var overlay = document.getElementById('assetLoading');
+  if (!bar || !pct || !overlay) return;
+
+  var done_ = false;
+  function hideOverlay() {
+    if (done_) return; done_ = true;
+    bar.style.width = '100%';
+    pct.textContent = '100%';
+    setTimeout(function() {
+      overlay.classList.add('done');
+      setTimeout(function() { overlay.style.display = 'none'; }, 400);
+    }, 150);
+  }
+
+  // Safety timeout: hide overlay after 15s max even if preload hangs
+  var safety = setTimeout(hideOverlay, 15000);
+
+  var phase1Urls = collectHomepageAssetUrls();
+  loadAssetsTracked(phase1Urls, function(done, total) {
+    var p = Math.round(done / total * 100);
+    bar.style.width = p + '%';
+    pct.textContent = p + '%';
+  }, function() {
+    clearTimeout(safety);
+    hideOverlay();
+    // Phase 2: preload remaining assets (menu, game, order, etc.) in background
+    setTimeout(function() {
+      loadAssetsTracked(collectAllAssetUrls(), null, null);
+    }, 1000);
+  });
+}
+
+// Fire-and-forget preload for switchTab / dismissSplash
 function preloadAllAssets() {
   loadAssetsTracked(collectAllAssetUrls(), null, null);
 }
 
-// ===== Loading Page =====
-function initLoadingPage() {
-  var page = document.getElementById('loadingPage');
-  var bar = document.getElementById('loadingBarFill');
-  var pct = document.getElementById('loadingPct');
-  var tip = document.getElementById('loadingTip');
-  if (!page || !bar || !pct) return;
-
-  // Collect all asset URLs first (fast, synchronous)
-  var allUrls = [];
-  try { allUrls = collectAllAssetUrls(); } catch(e) { console.warn('collectAllAssetUrls error:', e); }
-
-  var total = 0;
-  for (var i = 0; i < allUrls.length; i++) {
-    if (allUrls[i] && !_preloaded[allUrls[i]]) total++;
-  }
-
-  if (total === 0) {
-    // Everything's already cached — skip loading page immediately
-    page.classList.add('hide');
-    setTimeout(function() { page.classList.add('done'); }, 500);
-    return;
-  }
-
-  var startTime = Date.now();
-  var minShowTime = 500;
-  var maxWaitTime = 8000; // dismiss after 8s max, keep loading in background
-
-  // Random tips while loading
-  var tips = ['面条正在擀制中...','高汤正在熬制中...','辣椒正在翻炒中...','花生正在剥壳中...','牛肉正在卤制中...','红油正在炼制中...','臊子正在炒制中...','香菜正在切碎中...'];
-  var tipIdx = 0;
-  tip.textContent = tips[0];
-  var tipTimer = setInterval(function() {
-    tipIdx = (tipIdx + 1) % tips.length;
-    tip.textContent = tips[tipIdx];
-  }, 1200);
-
-  var finished = false;
-  var realDone = 0;
-  var realTotal = total;
-
-  function finish() {
-    if (finished) return;
-    finished = true;
-    clearInterval(tipTimer);
-    clearInterval(progressTimer);
-    clearTimeout(safetyTimer);
-    clearTimeout(maxTimer);
-    tip.textContent = '';
-    bar.style.width = '100%';
-    pct.textContent = '完成!';
-
-    var elapsed = Date.now() - startTime;
-    var remaining = Math.max(0, minShowTime - elapsed);
-    setTimeout(function() {
-      page.classList.add('hide');
-      setTimeout(function() { page.classList.add('done'); }, 500);
-    }, remaining);
-
-    // Continue preloading remaining assets in background
-    if (realDone < realTotal) {
-      setTimeout(function() { preloadAllAssets(); }, 1000);
-    }
-  }
-
-  // Max wait: dismiss loading page after 8s no matter what
-  var maxTimer = setTimeout(function() {
-    console.warn('[preload] Max wait (' + maxWaitTime + 'ms) reached, ' + realDone + '/' + realTotal + ' loaded — dismissing');
-    finish();
-  }, maxWaitTime);
-
-  // Safety fallback: dismiss after 15s (in case maxTimer fails somehow)
-  var safetyTimer = setTimeout(function() {
-    console.warn('[preload] Safety timeout (15s) — force dismissing');
-    finish();
-  }, 15000);
-
-  // Simulate progress even if real loading stalls (so bar never looks frozen)
-  var simPct = 0;
-  var progressTimer = setInterval(function() {
-    if (simPct < 90) {
-      simPct += Math.max(1, (90 - simPct) * 0.06);
-      bar.style.width = Math.round(simPct) + '%';
-      pct.textContent = Math.round(simPct) + '%';
-    }
-  }, 400);
-
-  loadAssetsTracked(allUrls, function(done, totalCount) {
-    realDone = done;
-    var realPct = Math.round((done / totalCount) * 100);
-    // Jump simulated progress to match real progress (but never go backwards)
-    if (realPct > simPct) simPct = realPct;
-    bar.style.width = Math.round(simPct) + '%';
-    pct.textContent = Math.round(simPct) + '%';
-  }, function() {
-    realDone = realTotal;
-    clearTimeout(maxTimer);
-    clearTimeout(safetyTimer);
-    finish();
-  });
-
-  // Tap to skip (emergency escape for users)
-  page.style.pointerEvents = 'auto';
-  page.addEventListener('click', function skipOnTap(e) {
-    if (finished) return;
-    console.log('[preload] User tapped to skip loading');
-    finish();
-    page.removeEventListener('click', skipOnTap);
-  });
-  page.addEventListener('touchend', function skipOnTouch(e) {
-    if (finished) return;
-    console.log('[preload] User touched to skip loading');
-    finish();
-    page.removeEventListener('touchend', skipOnTouch);
-  });
-}
-
-// Start loading page as soon as possible
+// Start phased preload as soon as DOM is ready
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
-  initLoadingPage();
+  startPhasedPreload();
 } else {
-  document.addEventListener('DOMContentLoaded', initLoadingPage);
+  document.addEventListener('DOMContentLoaded', startPhasedPreload);
 }
 
 function dismissSplash(action) {
@@ -4556,7 +4507,8 @@ function revealHomePage() {
   document.querySelector('.random-btn').style.opacity = '';
   document.querySelector('.btn-enter-menu').style.opacity = '';
   document.querySelector('.btn-cart').style.opacity = '';
-  document.querySelectorAll('.jiaotou-item').forEach(function(el) { el.style.opacity = '0'; });
+  // Hide all topping items for entrance animation (avoids flash of visible items)
+  if (jl) jl.style.opacity = '0';
   requestAnimationFrame(function() {
     entranceAnimation();
     condimentEntrance();
@@ -4743,23 +4695,8 @@ function confirmPay() {
   });
   closeCartPanel();
   hideConfirmPage();
-  // Show loading animation before game
-  var overlay = document.getElementById('loadingOverlay');
-  var gif1 = document.getElementById('loadingGif1');
-  var gif2 = document.getElementById('loadingGif2');
-  var text = overlay ? overlay.querySelector('.loading-text') : null;
-  if (gif1) gif1.style.display = 'none';
-  if (gif2) { gif2.style.display = 'block'; gif2.src = gif2.src; }
-  if (text) text.textContent = '订单支付成功！';
-  if (overlay) overlay.classList.add('show');
-  // Delay game page until overlay is visible
-  setTimeout(function() { showWaitingPage(orderItems); }, 600);
-  setTimeout(function() {
-    if (overlay) overlay.classList.add('fade-out');
-    setTimeout(function() {
-      if (overlay) { overlay.classList.remove('show'); overlay.classList.remove('fade-out'); }
-    }, 400);
-  }, 1500);
+  // Go directly to game waiting page — no intermediate loading overlay
+  setTimeout(function() { showWaitingPage(orderItems); }, 150);
 }
 
 function renderConfirmPage() {
@@ -4992,7 +4929,6 @@ bcv.width = 402 * DPR; bcv.height = 874 * DPR; bcv.style.width = '402px'; bcv.st
 bctx.scale(DPR, DPR);
 cv.width = 402 * DPR; cv.height = 874 * DPR; cv.style.width = '402px'; cv.style.height = '874px';
 ctx.scale(DPR, DPR);
-var ld = document.getElementById('dino-loading');
 var pge = document.getElementById('dino-pig-run'), pgeIdle = document.getElementById('dino-pig-idle'), pte = document.getElementById('dino-pot-s'), pteIdle = document.getElementById('dino-pot-idle');
 var scr = document.getElementById('dino-scroll'), sinner = document.getElementById('dino-scroll-inner');
 var sbtn = document.getElementById('dino-start-dom');
@@ -5009,11 +4945,11 @@ var SCR_Y = 100;
 
 var IMG = {};
 var P = {
-  pigStand:'dino-assets/猪的原始状态.webp', pigRun:'dino-assets/小猪奔跑.gif',
+  pigStand:'dino-assets/猪的原始状态.webp', pigRun:'dino-assets/小猪奔跑_opt.gif',
   pigJump:'dino-assets/小猪跳跃.webp', mountain:'dino-assets/山.webp',
-  bg:'游戏开始页面/游戏开始底图.webp', gameBg:'游戏开始页面/游戏页面.png', overBg:'游戏开始页面/游戏结束底图_副本.webp', onion:'dino-assets/葱的原始状态.webp',
+  bg:'游戏开始页面/游戏开始底图.webp', gameBg:'游戏开始页面/游戏页面.webp', overBg:'游戏开始页面/游戏结束底图_副本.webp', onion:'dino-assets/葱的原始状态.webp',
   garlic:'dino-assets/蒜的原始状态.webp', radish:'dino-assets/萝卜的原始状态.webp',
-  pot:'dino-assets/锅.gif', gameOver:'dino-assets/游戏结束.webp',
+  pot:'dino-assets/锅_opt.gif', gameOver:'dino-assets/游戏结束.webp',
   heartF:'dino-assets/有命的爱心.webp', heartE:'dino-assets/没命的爱心.webp',
   backBtn:'dino-assets/等待界面/返回键.webp',
   miniBtn:'dino-assets/等待界面/小程序按钮.webp', dineIcon:'游戏开始页面/堂食图标.png',
@@ -5029,9 +4965,12 @@ var pig, obs, pot, score, lives, spd, fc, nObs, inv, mtn, best, otm;
 try { best = parseInt(localStorage.getItem('pigRunBest') || '0'); } catch(e) {}
 var O = [{k:'onion',w:38,h:56},{k:'garlic',w:42,h:40},{k:'radish',w:45,h:46}];
 
+var _gameLoadPromise = null;
 function load(){
+  if (_gameLoadPromise) return _gameLoadPromise;
   var ps = Object.entries(P).filter(function(e){ return !/\.mp4$/.test(e[1]); }).map(function(e){ var k=e[0],s=e[1]; return new Promise(function(r){ var i=new Image(); i.onload=function(){ IMG[k]=i; r(); }; i.onerror=function(){ console.warn(s); r(); }; i.src=s; }); });
-  return Promise.all(ps);
+  _gameLoadPromise = Promise.all(ps);
+  return _gameLoadPromise;
 }
 
 function rst(){
@@ -5213,7 +5152,7 @@ function populateFoodCard(items) {
 }
 function endGame(){
   var bgImg = document.getElementById('waitingBgImg');
-  if (bgImg) bgImg.src = '游戏开始页面/游戏页面.png';
+  if (bgImg) bgImg.src = '游戏开始页面/游戏页面.webp';
   var m = document.getElementById('pigStatusMain');
   if (m) m.innerHTML = '已出餐，<br>等待上菜';
   var s = document.getElementById('pigStatusSub');
@@ -5295,7 +5234,6 @@ window.showWaitingPage = function(items){
   if (!window._dinoGameReady) {
     window._dinoGameReady = true;
     load().then(function(){
-      ld.style.display = 'none';
       rst(); gs = ST.IDLE;
       setupDOM();
       requestAnimationFrame(loop);
@@ -5335,6 +5273,8 @@ window.hideWaitingPage = function(){
   var orderPage = document.getElementById('page-order');
   if (orderPage) orderPage.scrollTop = 0;
 };
+// Pre-warm game assets early so game starts instantly
+setTimeout(function(){ load(); }, 200);
 })();
 </script>
 
