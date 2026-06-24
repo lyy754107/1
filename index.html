@@ -3726,13 +3726,13 @@ function doSwitchTab(name) { _dbg("doSwitchTab:"+name);
       var pageEl = document.getElementById(pageMap[tabName]);
       if (!pageEl) return;
       pageEl.style.setProperty('display', 'none', 'important');
-      pageEl.style.setProperty('z-index', '', 'important');
-      pageEl.style.setProperty('opacity', '', 'important');
+      pageEl.style.removeProperty('z-index');
+      pageEl.style.removeProperty('opacity');
     });
     var incomingEl = document.getElementById(pageMap[name]);
     if (incomingEl) {
       incomingEl.style.removeProperty('display');
-      incomingEl.style.display = 'block';
+      incomingEl.style.setProperty('display', 'block', 'important');
       incomingEl.style.zIndex = '11';
       incomingEl.style.opacity = '0';
       incomingEl.offsetHeight;
@@ -3745,14 +3745,19 @@ function doSwitchTab(name) { _dbg("doSwitchTab:"+name);
       } else {
         app.classList.remove('is-menu');
       }
-      // Double-check: force-hide every OTHER tab page after a frame
-      requestAnimationFrame(function() {
-        Object.keys(pageMap).forEach(function(tabName) {
-          if (tabName === name) return;
-          var other = document.getElementById(pageMap[tabName]);
-          if (other) other.style.setProperty('display', 'none', 'important');
-        });
-      });
+	      // Double-check: force-hide every OTHER tab page after a frame + dump state
+	      var targetName = name;
+	      requestAnimationFrame(function() {
+	      	Object.keys(pageMap).forEach(function(tabName) {
+	      	  if (tabName === targetName) return;
+	      	  var other = document.getElementById(pageMap[tabName]);
+	      	  if (other) other.style.setProperty('display', 'none', 'important');
+	      	});
+	      	// Dump runtime style state for debugging
+	      	var pm = document.getElementById('page-menu');
+	      	var po = document.getElementById('page-order');
+	      	_dbg('OK menu.d='+ (pm?pm.style.display:'?') +' ord.d='+ (po?po.style.display:'?'));
+	      });
     }
   }
   if (name === '首页') {
