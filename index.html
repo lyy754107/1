@@ -3418,26 +3418,23 @@ function renderNav() {
   ).join('');
 }
 
-// Persistent event delegation — survives renderNav() innerHTML replacements
-(function initNavDelegation() {
-  var navBar = document.getElementById('navBar');
-  navBar.addEventListener('touchstart', function(e) {
-    var item = e.target.closest('.nav-item');
-    if (!item) return;
-    var tabName = item.getAttribute('data-tab');
-    if (!tabName) return;
-    e.preventDefault();
-    e.stopPropagation();
-    switchTab(tabName);
-  }, {passive: false});
-  navBar.addEventListener('click', function(e) {
-    var item = e.target.closest('.nav-item');
-    if (!item) return;
-    var tabName = item.getAttribute('data-tab');
-    if (!tabName) return;
-    switchTab(tabName);
-  });
-})();
+	// Robust event delegation on .app (capture phase) — survives renderNav() and
+	// works even if page-waiting interferes with event dispatch to navBar children.
+	(function initNavDelegation() {
+	  var app = document.querySelector('.app');
+	  function handle(e) {
+	    var item = e.target.closest('.nav-item');
+	    if (!item) return;
+	    var tabName = item.getAttribute('data-tab');
+	    if (!tabName) return;
+	    e.preventDefault();
+	    e.stopPropagation();
+	    _dbg("navTap:"+tabName);
+	    switchTab(tabName);
+	  }
+	  app.addEventListener('touchstart', handle, {capture: true, passive: false});
+	  app.addEventListener('click', handle, {capture: true});
+	})();
 
 function selectMethod(method) {
   state.method = method;
