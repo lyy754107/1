@@ -3700,13 +3700,15 @@ function doSwitchTab(name) {
     document.getElementById('navBar').style.zIndex = '';
     if (nbg) nbg.classList.add('show');
   } else {
-    // Going to a tab page: hide others first, then fade in new on top
+    // Going to a tab page: wipe all pages, then fade in the target
     dismissEntryPopup();
+    // Unconditionally hide ALL tab pages first to prevent bleed-through
     Object.keys(pageMap).forEach(function(tabName) {
-      if (tabName === name) return;
       var pageEl = document.getElementById(pageMap[tabName]);
-      if (!pageEl || pageEl.style.display !== 'block') return;
-      pageEl.style.display = 'none'; pageEl.style.zIndex = '';
+      if (!pageEl) return;
+      pageEl.style.display = 'none';
+      pageEl.style.zIndex = '';
+      pageEl.style.opacity = '';
     });
     var incomingEl = document.getElementById(pageMap[name]);
     if (incomingEl) {
@@ -3715,16 +3717,14 @@ function doSwitchTab(name) {
       incomingEl.style.opacity = '0';
       incomingEl.offsetHeight;
       incomingEl.style.opacity = '1';
+      // Ensure home-page chrome is hidden
+      app.classList.add('on-menu');
       if (name === '菜单') {
         app.classList.add('is-menu');
         if (!state._menuRendered) { renderMenuCards(); state._menuRendered = true; }
       } else {
         app.classList.remove('is-menu');
       }
-      setTimeout(function() {
-        incomingEl.style.zIndex = '10';
-        app.classList.add('on-menu');
-      }, 350);
     }
   }
   if (name === '首页') {
@@ -3733,9 +3733,6 @@ function doSwitchTab(name) {
     bgm.stop();
   }
   if (name === '订单') {
-    // Force-hide menu page to ensure it doesn't bleed through
-    var mp = document.getElementById('page-menu');
-    if (mp) { mp.style.display = 'none'; mp.style.zIndex = ''; }
     renderOrderPage();
   }
   if (name === '我的') renderMePage();
