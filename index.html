@@ -3427,7 +3427,10 @@ function renderNav() {
 	    if (!item) {
 	      // #page-waiting overlay may capture the event; look through it
 	      var touch = e.touches ? e.touches[0] : e;
-	      var els = document.elementsFromPoint(touch.clientX, touch.clientY);
+	      var scale = parseFloat(getComputedStyle(app).zoom) || 1;
+	      var sx = touch.clientX / scale;
+	      var sy = touch.clientY / scale;
+	      var els = document.elementsFromPoint(sx, sy);
 	      for (var i = 0; i < els.length; i++) {
 	        item = els[i].closest('.nav-item');
 	        if (item) break;
