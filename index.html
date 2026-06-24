@@ -3732,7 +3732,12 @@ function doSwitchTab(name) {
   } else {
     bgm.stop();
   }
-  if (name === '订单') renderOrderPage();
+  if (name === '订单') {
+    // Force-hide menu page to ensure it doesn't bleed through
+    var mp = document.getElementById('page-menu');
+    if (mp) { mp.style.display = 'none'; mp.style.zIndex = ''; }
+    renderOrderPage();
+  }
   if (name === '我的') renderMePage();
 }
 
@@ -5242,6 +5247,7 @@ window.showWaitingPage = function(items){
 };
 window.hideWaitingPage = function(){
   var el = document.getElementById('page-waiting');
+  if (!el || !el.classList.contains('show')) return; // guard against double-call
   el.classList.remove('show');
   el.style.display = 'none';
   el.style.pointerEvents = 'none';
