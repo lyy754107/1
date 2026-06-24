@@ -3424,6 +3424,15 @@ function renderNav() {
 	  var app = document.querySelector('.app');
 	  function handle(e) {
 	    var item = e.target.closest('.nav-item');
+	    if (!item) {
+	      // #page-waiting overlay may capture the event; look through it
+	      var touch = e.touches ? e.touches[0] : e;
+	      var els = document.elementsFromPoint(touch.clientX, touch.clientY);
+	      for (var i = 0; i < els.length; i++) {
+	        item = els[i].closest('.nav-item');
+	        if (item) break;
+	      }
+	    }
 	    if (!item) return;
 	    var tabName = item.getAttribute('data-tab');
 	    if (!tabName) return;
