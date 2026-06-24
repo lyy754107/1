@@ -3630,33 +3630,22 @@ function toggleCondiment(name, el) {
   if (el.dataset.animating === '1') return;
   const idx = state.condiments.indexOf(name);
   const def = condDefs.find(c => c.name === name);
-  const img = el.querySelector('img');
   const adding = idx === -1;
-  const newSrc = adding ? def.s : def.u;
 
+  // Apply state change and image swap synchronously for instant feedback
   el.dataset.animating = '1';
-  img.style.transition = 'transform 0.15s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease';
-  img.style.opacity = '0';
-  img.style.transform = 'scale(0.6)';
-
+  if (idx > -1) {
+    state.condiments.splice(idx, 1);
+  } else {
+    state.condiments.push(name);
+  }
+  // Immediate image swap on the clicked element
+  const img = el.querySelector('img');
+  if (img) img.src = adding ? def.s : def.u;
+  // Defer heavy bowl overlay update + price to next frame
   requestAnimationFrame(function() {
-    if (adding) {
-      state.condiments.push(name);
-    } else {
-      state.condiments.splice(idx, 1);
-    }
-    img.src = newSrc;
-    img.style.opacity = '1';
-    img.style.transform = 'scale(1)';
     updateBowlOverlays();
     updatePrice();
-  });
-
-  img.addEventListener('transitionend', function handler() {
-    img.removeEventListener('transitionend', handler);
-    img.style.transition = '';
-    img.style.transform = '';
-    img.style.opacity = '';
     el.dataset.animating = '';
   });
 }
