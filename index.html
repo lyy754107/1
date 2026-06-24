@@ -3694,7 +3694,7 @@ function doSwitchTab(name) {
       if (!pageEl || pageEl.style.display !== 'block') return;
       pageEl.style.zIndex = '11';
       pageEl.style.opacity = '0';
-      setTimeout(function() { pageEl.style.display = 'none'; pageEl.style.zIndex = ''; }, 350);
+      setTimeout(function() { pageEl.style.removeProperty('display'); pageEl.style.setProperty('display', 'none', 'important'); pageEl.style.zIndex = ''; }, 350);
     });
     document.getElementById('navBar').style.display = '';
     document.getElementById('navBar').style.zIndex = '';
@@ -3702,16 +3702,17 @@ function doSwitchTab(name) {
   } else {
     // Going to a tab page: wipe all pages, then fade in the target
     dismissEntryPopup();
-    // Unconditionally hide ALL tab pages first to prevent bleed-through
+    // Force-hide ALL tab pages with !important to prevent any CSS override
     Object.keys(pageMap).forEach(function(tabName) {
       var pageEl = document.getElementById(pageMap[tabName]);
       if (!pageEl) return;
-      pageEl.style.display = 'none';
-      pageEl.style.zIndex = '';
-      pageEl.style.opacity = '';
+      pageEl.style.setProperty('display', 'none', 'important');
+      pageEl.style.setProperty('z-index', '', 'important');
+      pageEl.style.setProperty('opacity', '', 'important');
     });
     var incomingEl = document.getElementById(pageMap[name]);
     if (incomingEl) {
+      incomingEl.style.removeProperty('display');
       incomingEl.style.display = 'block';
       incomingEl.style.zIndex = '11';
       incomingEl.style.opacity = '0';
